@@ -9,17 +9,22 @@ const Navbar = () => {
   const [token, setToken] = useState(true);
 
   return (
-    <div className='flex items-center justify-between text-sm py-4 mb-5 border-b border-b-gray-400'>
+    <div className='flex items-center justify-center text-lg py-2  mt-20 ' style={{ fontFamily: 'PTSerif-Regular' }}>
       
-      <ul className='hidden md:flex items-start gap-5 font-medium'>
+      <ul className='hidden md:flex items-center gap-5'>
         <NavLink to="/">
-          <li className='py-1'>HOME</li>
+          <li className='py-1'>Home</li>
           <hr className='border-none outline-none h-0.5 bg-primary w-3/5 m-auto hidden' />
         </NavLink>
-        <NavLink to="/contact">
-          <li className='py-1'>CONTACT</li>
+        <NavLink to="/Services">
+          <li className='py-1'>Services</li>
           <hr className='border-none outline-none h-0.5 bg-primary w-3/5 m-auto hidden' />
          </NavLink>
+        <NavLink to="/contact">
+          <li className='py-1'>Contact</li>
+          <hr className='border-none outline-none h-0.5 bg-primary w-3/5 m-auto hidden' />
+         </NavLink>
+         
       </ul>
     </div>
   )
