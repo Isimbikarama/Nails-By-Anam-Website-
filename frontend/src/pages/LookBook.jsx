@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Footer from '../components/Footer';  
 
 const nailPhotos = [
   'https://www.refinery29.com/images/11798078.jpg',
@@ -73,6 +74,7 @@ const LookBook = () => {
           </div>
         </div>
       )}
+      <Footer/>
     </div>
   );
 };
