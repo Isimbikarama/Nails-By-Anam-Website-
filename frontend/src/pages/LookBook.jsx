@@ -36,6 +36,7 @@ const LookBook = () => {
   };
 
   return (
+    <div>
     <div className='lg:p-20 p-8 items-center justify-center flex flex-col'>
       <h1 className="text-white text-6xl md:text-7xl glow mb-6" style={{ fontFamily: 'BebasNeue-Regular' }}>
         LookBook
@@ -74,6 +75,7 @@ const LookBook = () => {
           </div>
         </div>
       )}
+      </div>
       <Footer/>
     </div>
   );
