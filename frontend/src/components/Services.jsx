@@ -1,39 +1,42 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const services = [
   {
     id: 1,
-    title: 'Web Development',
-    description: 'Building responsive and dynamic websites with modern technologies.',
-    price: '$1500',
-    image: 'https://img.freepik.com/free-photo/woman-showing-her-beautiful-nails_23-2148697087.jpg?t=st=1742239069~exp=1742242669~hmac=0d7c9e38766cebba22112dd55f34b99b0a5f32f37dd24ee226c690a3720d019c&w=1800',
+    title: 'Classic Gel Manicure',
+    description: 'A traditional manicure that includes nail shaping, cuticle care, and a polish of your choice.',
+    price: '$25+',
+    image: 'https://img.freepik.com/free-photo/woman-showing-her-beautiful-nails_23-2148697087.jpg?t=st=1742829881~exp=1742833481~hmac=85bc064bc13fc18b2e3323079c04da0d6e640bad7f7cfc1e95e6a15873acc085&w=1800',
   },
   {
     id: 2,
-    title: 'UI/UX Design',
-    description: 'Crafting intuitive and beautiful user interfaces for better user experience.',
-    price: '$1200',
-    image: 'https://img.daisyui.com/images/stock/photo-1559703248-dcaaec9fab78.webp',
+    title: 'Gel-X Manicure',
+    description: 'Long-lasting gel polish with gel-x extension tips. Lasts up to 3 weeks without chipping.',
+    price: '$40+',
+    image: 'https://img.freepik.com/free-photo/woman-showing-her-nail-art-fingernails_23-2149820439.jpg?t=st=1742829883~exp=1742833483~hmac=bb428074118a36abc49104a68cd22286dbd5c1f4781897ee97c5a32d42dc13b8&w=2000',
   },
   {
     id: 3,
-    title: 'SEO Optimization',
-    description: 'Improving website visibility and search engine rankings.',
-    price: '$800',
-    image: 'https://img.daisyui.com/images/stock/photo-1559703248-dcaaec9fab78.webp',
+    title: 'Acrylic Nail Extensions',
+    description: 'Enhance your nails with durable acrylic extensions, shaped and styled to your preference.',
+    price: '$60+',
+    image: 'https://img.freepik.com/free-photo/healthy-beautiful-manicure-flowers-polish_23-2148766555.jpg?t=st=1742830147~exp=1742833747~hmac=3ef05fd8347d792bf27576ffa5b36bfc113ed46e9e4c040e2d871cb908a4901c&w=2000',
   },
   {
     id: 4,
-    title: 'Digital Marketing',
-    description: 'Strategic online marketing to grow your business presence.',
-    price: '$1000',
-    image: 'https://img.daisyui.com/images/stock/photo-1559703248-dcaaec9fab78.webp',
+    title: 'Parafin Wax Treatment',
+    description: 'A relaxing pedicure with exfoliation, massage, and a moisturizing treatment.',
+    price: '$50+',
+    image: 'https://img.freepik.com/free-photo/close-up-mortar-with-creamy-substance_23-2147809251.jpg?t=st=1742830275~exp=1742833875~hmac=15402de13c0c7be3150394821bf5c2b951c180b42d0c18e4b86d949ddfb33918&w=2000',
   },
 ];
+
 
 const Services = () => {
   const carouselRef = useRef(null);
   const [selectedService, setSelectedService] = useState(null);
+  const [showAllServices, setShowAllServices] = useState(false);
   
   // Set up refs instead of state to avoid re-renders during scrolling
   const isTransitioning = useRef(false);
@@ -128,6 +131,17 @@ const Services = () => {
     setSelectedService(null);
   };
 
+  const toggleAllServices = () => {
+    setShowAllServices(!showAllServices);
+  };
+
+  const navigate = useNavigate();
+
+  const handleCheckAllServices = () => {
+    window.scrollTo(0, 0); // Scroll to top
+    navigate('/Services');
+  };
+
   return (
     <div className="items-center w-full py-12 relative px-[5%]">
       <h2 className="text-8xl font-regular text-center mb-8" style={{ fontFamily: 'Twister' }}>
@@ -185,6 +199,16 @@ const Services = () => {
         </div>
       </div>
 
+      {/* Check All Services Button */}
+      <div className="flex justify-center mt-8">
+        <button 
+          onClick={handleCheckAllServices}
+          className="px-8 py-3 bg-pink-400 text-white rounded-full hover:bg-pink-500 transition-colors duration-300 font-semibold shadow-md"
+        >
+          Check All Services
+        </button>
+      </div>
+
       <style jsx>{`
         .hide-scrollbar::-webkit-scrollbar {
           display: none;
@@ -195,9 +219,9 @@ const Services = () => {
         }
       `}</style>
 
-      {/* Modal */}
+      {/* Modal with 10% opacity black background overlay */}
       {selectedService && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex justify-center items-center z-50">
+        <div className="fixed inset-0 glow flex justify-center items-center z-50 backdrop-filter backdrop-blur-sm ">
           <div className="relative bg-white rounded-2xl shadow-lg w-[90%] max-w-md p-8 mx-auto my-auto transform transition-all">
             <button
               onClick={closeModal}
@@ -217,6 +241,37 @@ const Services = () => {
               <p className="text-xl font-semibold text-gray-900 text-center">
                 Price: {selectedService.price}
               </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* All Services Modal */}
+      {showAllServices && (
+        <div className="fixed inset-0 glow flex justify-center items-center z-50 backdrop-filter backdrop-blur-sm">
+          <div className="relative bg-white rounded-2xl shadow-lg w-[90%] max-w-4xl p-8 mx-auto my-auto transform transition-all max-h-[80vh] overflow-y-auto">
+            <button
+              onClick={toggleAllServices}
+              className="absolute top-4 right-4 text-gray-600 hover:text-black text-xl font-bold"
+            >
+              ✕
+            </button>
+
+            <h2 className="text-3xl font-bold mb-6 text-center">All Services</h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {services.map((service) => (
+                <div key={service.id} className="bg-white rounded-lg shadow-md p-4 flex flex-col">
+                  <img
+                    src={service.image}
+                    alt={service.title}
+                    className="w-full h-48 object-cover rounded-lg mb-4"
+                  />
+                  <h3 className="text-xl font-semibold mb-2">{service.title}</h3>
+                  <p className="text-gray-600 mb-4 flex-grow">{service.description}</p>
+                  <p className="text-lg font-semibold text-gray-900">Price: {service.price}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>

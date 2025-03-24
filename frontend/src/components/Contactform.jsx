@@ -3,30 +3,30 @@ import { assets } from "../assets/assets";
 
 const Contactform = () => {
   return (
-    <div className="flex flex-col md:flex-row justify-center items-center min-h-screen  p-6">
+    <div className="flex flex-col md:flex-row justify-center items-center p-2">
     
         {/* Left side with image */}
         <div className="flex-shrink-0 mb-6 md:mb-0 md:mr-16 relative">
           <img
             src={assets.Character_Logo} // Replace with your image path
             alt="Nail Artist Cartoon"
-            className="w-100 h-full"
+            className="w-75 h-full lg:w-100"
           />
         </div>
 
         {/* Speech bubble and form */}
-        <div className="bg-pink-100 rounded-3xl shadow-lg p-8 w-3/5 relative">
+        <div className="bg-pink-100 rounded-3xl shadow-lg p-8 sm:px-10 lg:w-3/5 w-9/10 relative">
 
          
 
-          <h2 className="text-black text-2xl md:text-3xl font-medium text-center md:text-left mb-4">
+          <h2 className="text-black text-2xl md:text-3xl font-medium text-center md:text-left mb-4" style={{fontFamily: 'PTSerif-Regular'}}>
             Any Questions?
           </h2>
-          <h1 className="text-black text-5xl md:text-6xl font-bold italic mb-8 text-center md:text-left">
+          <h1 className="text-black text-5xl md:text-6xl font-bold italic mb-8 text-center md:text-left" style={{fontFamily: 'Twister'}}>
             Let Me know!
           </h1>
 
-          <form className="space-y-6">
+          <form className="space-y-6" style={{fontFamily: 'PTSerif-Regular'}}>
             <div>
               <label className="block text-black text-lg mb-2" htmlFor="name">
                 Name:
