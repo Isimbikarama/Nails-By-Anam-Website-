@@ -31,7 +31,7 @@ const About = () => {
         </p>
 
         {/* Button */}
-        <button onClick={handleLearnMore} className="bg-pink-400 hover:bg-pink-500 text-black font-medium text-xl md:text-2xl px-6 md:px-8 py-3 md:py-4 rounded-xl shadow-md transition-all duration-300">
+        <button onClick={handleLearnMore} className="bg-pink-400 hover:bg-pink-500 text-black font-medium text-xl md:text-2xl px-6 md:px-8 py-3 md:py-4 rounded-xl shadow-md transition-all duration-300" style={{fontFamily: 'PTSerif-Regular'}}>
           Learn More
         </button>
       </div>
