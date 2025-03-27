@@ -3,14 +3,14 @@ import { assets } from "../assets/assets";
 
 const Contactform = () => {
   return (
-    <div className="flex flex-col md:flex-row justify-center items-center p-2">
+    <div className="flex flex-col md:flex-row justify-center items-center md:p-15 p-2  md:mt-[-5%] mt-[-2%] mb-10">
     
         {/* Left side with image */}
         <div className="flex-shrink-0 mb-6 md:mb-0 md:mr-16 relative">
           <img
             src={assets.Character_Logo} // Replace with your image path
             alt="Nail Artist Cartoon"
-            className="w-75 h-full lg:w-100"
+            className="w-75 h-full lg:w-100  "
           />
         </div>
 
@@ -19,10 +19,10 @@ const Contactform = () => {
 
          
 
-          <h2 className="text-black text-2xl md:text-3xl font-medium text-center md:text-left mb-4" style={{fontFamily: 'PTSerif-Regular'}}>
+          <h2 className="text-black text-2xl md:text-3xl  text-center mb-4" style={{fontFamily: 'PTSerif-Regular'}}>
             Any Questions?
           </h2>
-          <h1 className="text-black text-5xl md:text-6xl font-bold italic mb-8 text-center md:text-left" style={{fontFamily: 'Twister'}}>
+          <h1 className="text-black text-5xl md:text-6xl  italic mb-8 text-center " style={{fontFamily: 'Twister'}}>
             Let Me know!
           </h1>
 

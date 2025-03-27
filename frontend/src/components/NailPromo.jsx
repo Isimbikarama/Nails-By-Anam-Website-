@@ -35,7 +35,7 @@ const handleCheckCollection= () => {
             <p className="font-bold text-lg lg:text-3xl tracking-wide mb-4 lg:mb-8" style={{fontFamily:'BebasNeue-Regular'}}>
               CUSTOM · AFFORDABLE · DURABLE
             </p>
-            <button onClick={handleCheckCollection} className="bg-pink-300 text-black px-6 py-3 lg:px-8 lg:py-4 text-sm lg:text-lg rounded-lg font-semibold hover:bg-pink-400 transition-colors duration-300 shadow-md cursor-pointer" style={{fontFamily:'PTSerif-Regular'}}>
+            <button onClick={handleCheckCollection} className="bg-pink-300 text-black px-6 py-3 lg:px-8 lg:py-4 text-sm lg:text-lg rounded-lg  hover:bg-pink-400 transition-colors duration-300 shadow-md cursor-pointer" style={{fontFamily:'PTSerif-Regular'}}>
               Explore the Collections
             </button>
           </div>
