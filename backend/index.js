@@ -59,13 +59,12 @@ const googleCredentials = {
 };
 
 const auth = new google.auth.GoogleAuth({
-  credentials: googleCredentials,
-  scopes: SCOPES
+  keyFile: './api-config.json',
+  scopes: ['https://www.googleapis.com/auth/spreadsheets']
 });
 
-
+// Updated the sheets initialization
 let sheets;
-// Initialize Google Sheets
 (async () => {
   try {
     const client = await auth.getClient();
