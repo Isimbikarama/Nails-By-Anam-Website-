@@ -47,7 +47,8 @@ const Contactform = () => {
                 type="email"
                 className="w-full px-4 py-2 border border-pink-400 rounded-full focus:outline-none focus:ring-2 focus:ring-pink-500"
               />
-            </div>
+
+
 
             <div>
               <label
@@ -59,6 +60,14 @@ const Contactform = () => {
               <input
                 id="phone"
                 type="tel"
+                className="w-full px-4 py-2 border border-pink-400 rounded-full focus:outline-none focus:ring-2 focus:ring-pink-500"
+              />
+            </div>
+
+            <label className="block text-black text-lg mb-2" htmlFor="email">
+                Comment:
+              </label>
+              <input
                 className="w-full px-4 py-2 border border-pink-400 rounded-full focus:outline-none focus:ring-2 focus:ring-pink-500"
               />
             </div>

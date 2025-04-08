@@ -1,7 +1,16 @@
 import React from 'react'
 import { assets } from '../assets/assets'
+import { useNavigate } from 'react-router-dom'
 
 const Header = () => {
+
+  const navigate = useNavigate();
+
+  const handleGoToBooking = () => {
+    window.scrollTo(0, 0);
+    navigate('/Booking');
+  }
+
   return (
     <div className='bg-transparent flex flex-col md:flex-row flex-wrap rounded-lg px-6 md:px-10 lg:px-2 justify-center items-center hide-scrollbar px-[5%] '>
       {/* left side */}
@@ -16,15 +25,15 @@ const Header = () => {
           </p>
           <div className='flex flex-col md:flex-row items-center justify-center w-full max-w-md mx-auto mt-[-5%]'>
             <p className='text-center  text-xl' style={{fontFamily:'PTSerif-Regular'}}>
-              Simply browse through our extensive list of trusted doctors, schedule an appointment now!
+              Schedule an appointment now!
             </p>
           </div>
-          <a className='text-xl flex items-center justify-center gap-2 bg-white px-8 py-3 rounded-full text-gray-600 text-sm hover:scale-105 transition-all duration-300 max-w-md mx-auto' href="#speciality" style={{fontFamily:'PTSerif-Regular'}}>
-            Book Appointment 
-          </a>
+          <button onClick={handleGoToBooking} className='text-xl flex items-center justify-center gap-2 bg-white px-8 py-3 rounded-full text-gray-600 text-sm hover:scale-105 transition-all duration-300 max-w-md mx-auto' style={{fontFamily:'PTSerif-Regular'}}>
+      Book Appointment
+          </button>
+         
         </div>
       </div>
-     
     </div>
   )
 }

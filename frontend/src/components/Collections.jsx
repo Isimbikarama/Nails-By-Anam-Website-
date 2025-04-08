@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import {useNavigate} from 'react-router-dom';
 
 const collections = [
   {
@@ -128,6 +129,13 @@ const Collections = () => {
     setSelectedCollection(null);
   };
 
+  const navigate = useNavigate(); 
+  
+  const handleLookBook = () => {
+    window.scrollTo(0, 0); // Scroll to top
+    navigate('/LookBook');
+  }
+
   return (
     <div>
     <div className="items-center w-full relative px-[5%] " >
@@ -235,7 +243,7 @@ const Collections = () => {
         Check out the look book for more inspo!
       </p>
       
-      <button
+      <button onClick={handleLookBook}
         className="bg-pink-100 hover:bg-pink-200 transition-colors duration-300 py-4 px-12 rounded-full shadow-md"
         style={{ fontFamily: 'Twister' }}
       >

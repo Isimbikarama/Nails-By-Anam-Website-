@@ -1,6 +1,8 @@
 @import "tailwindcss";
 
-
+@theme {
+    --color-primary: #FFFFFF;
+}
 
 @font-face {
     font-family: 'BebasNeue-Regular';
@@ -33,7 +35,10 @@
     src: url('/src/assets/fonts/PTSerif-BoldItalic.ttf') format('truetype');
 }
 
-
+body {
+    background: linear-gradient(90deg, #FFAABE 25%, #fdd0da 100%);
+    background-size: cover;
+}
 
 .text-vw-25 {
     font-size: 12vw;
@@ -97,33 +102,4 @@
     -ms-overflow-style: none;  /* Hide scrollbar for IE and Edge */
     scrollbar-width: none;  /* Hide scrollbar for Firefox */
   }
-
-  html, body {
-    background: linear-gradient(90deg, #FFAABE 25%, #fdd0da 100%);; /* Replace with your desired background color */
-    min-height: 100vh; /* Ensure full height */
-    width: 100vw;
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    overflow-y: auto;
-    background-size: cover;
-    background-attachment: fixed;
-  }
-  
-  #root {
-    /* Apply padding to the root element to respect safe area insets */
-    padding-top: env(safe-area-inset-top);
-    padding-right: env(safe-area-inset-right);
-    padding-bottom: env(safe-area-inset-bottom);
-    padding-left: env(safe-area-inset-left);
-  }
-
-  @layer utilities {
-    .force-gpu {
-      -webkit-transform: translateZ(0);
-      transform: translateZ(0);
-      backface-visibility: hidden;
-    }
-  }
-  
 

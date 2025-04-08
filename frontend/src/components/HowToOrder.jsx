@@ -1,6 +1,13 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const HowToOrder = () => {
+  const navigate = useNavigate();
+
+  const handleGoToBooking = () => {
+    window.scrollTo(0, 0);
+    navigate('/Booking');
+  }
   const steps = [
     {
       id: 1,
@@ -48,7 +55,7 @@ const HowToOrder = () => {
 
         {/* Book Now Button */}
         <div className="flex justify-center">
-          <button className="bg-pink-100 hover:bg-pink-200 text-stone-800 font-bold text-2xl py-4 px-10 rounded-full shadow-md transition-colors" style = {{fontFamily: 'PTSerif-Regular'}}>    
+          <button onClick={handleGoToBooking} className="bg-pink-100 hover:bg-pink-200 text-stone-800 font-bold text-2xl py-4 px-10 rounded-full shadow-md transition-colors" style = {{fontFamily: 'PTSerif-Regular'}}>    
             BOOK NOW
           </button>
         </div>

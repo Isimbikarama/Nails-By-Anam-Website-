@@ -1,6 +1,17 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom';
+
+
 
 const Menu = () => {
+  
+  const navigate = useNavigate();
+  
+    const handleGoToBooking = () => {
+      window.scrollTo(0, 0);
+      navigate('/Booking');
+    }
+
   return (
     <div>
       <div className="min-h-screen p-4 flex flex-col items-center">
@@ -110,8 +121,7 @@ const Menu = () => {
             <p className="text-lg font-medium mb-4">
               <span role="img" aria-label="heart">💕</span> Book Your Appointment Today! <span role="img" aria-label="heart">💕</span>
             </p>
-            
-            <button className="bg-pink-300 hover:bg-pink-400 text-black font-bold py-2 px-6 rounded-full w-32 font-cursive text-lg">
+            <button onClick = {handleGoToBooking} className="bg-pink-300 hover:bg-pink-400 text-black font-bold py-2 px-6 rounded-full w-32 font-cursive text-lg">
               Book!
             </button>
           </div>
