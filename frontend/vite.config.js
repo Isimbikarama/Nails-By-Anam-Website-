@@ -17,7 +17,7 @@ export default defineConfig({
             extend: {
               fontFamily: {
                 custom: ['CustomFont', 'sans-serif'],
-              },
+              }
             },
           },
         }),

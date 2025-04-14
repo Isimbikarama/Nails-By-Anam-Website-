@@ -23,7 +23,7 @@ const NailCareBenefits = () => {
   ];
 
   return (
-    <div className="bg-pink-100 p-6 rounded-2xl m-20" style={{ fontFamily: 'PTSerif-Regular' }}>
+    <div className="bg-pink-100 p-6 rounded-2xl md:m-20 m-10" style={{ fontFamily: 'PTSerif-Regular' }}>
 
 
         <h2 className="text-6xl  text-center mb-6" style={{ fontFamily: 'Twister' }}>Why Cuticle Oil?</h2>

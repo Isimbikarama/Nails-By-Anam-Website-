@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 
-export default function Ingredients() {
+export default function IngredientsInfo() {
   // State to track which dropdowns are open
   const [openDropdowns, setOpenDropdowns] = useState({});
   
@@ -67,15 +67,13 @@ export default function Ingredients() {
   };
 
   return (
-    <div className=" p-6 rounded-lg mx-auto">
-      {/* Header */}
+    <div className=" p-6 rounded-lg mx-auto items-center justify-center" >
+      
     
-        <h1 className="text-5xl font-bold text-white text-center drop-shadow-lg">INGREDIENTS</h1>
+        <h1 className="text-5xl font-bold text-white text-center drop-shadow-lg  " style={{fontFamily: 'BebasNeue-Regular'}}>INGREDIENTS</h1>
         
       
-      <div className="italic text-2xl font-light text-gray-700 mb-6 text-center">cuticle oil</div>
-      
-      <p className="text-pink-800 text-center mb-8">
+      <p className="text-center text-pink-800 text-xl my-8 w-3/4 mx-auto" style={{fontFamily: 'PTSerif-Regular' }} >
         Discover the natural and effective ingredients that make our cuticle oil formula so nourishing.
         Each ingredient plays a crucial role in maintaining healthy nails and cuticles.
       </p>
