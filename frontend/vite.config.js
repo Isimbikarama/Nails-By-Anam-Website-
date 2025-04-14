@@ -8,8 +8,11 @@ export default defineConfig({
   plugins: [
     react(),
     legacy({
-      targets: ['defaults', 'not IE 11'], // Target modern browsers but not IE 11 (you can modify this as needed)
-      additionalLegacyPolyfills: ['regenerator-runtime/runtime'], // To support async/await in older browsers
+      targets: [
+        '> 0.2%, not dead', // Target browsers with more than 0.2% usage globally (can adjust based on your needs)
+        'IE 11',
+      ],
+      additionalLegacyPolyfills: ['regenerator-runtime/runtime'], // Required for async/await compatibility
     }),
   ],
   css: {
@@ -23,7 +26,7 @@ export default defineConfig({
           theme: {
             extend: {
               fontFamily: {
-                custom: ['CustomFont', 'sans-serif'],
+                custom: ['BebasNeue-Regular', 'PTSerif-Regular', 'Twister'],
               },
             },
           },
@@ -33,3 +36,5 @@ export default defineConfig({
     },
   },
 })
+
+
