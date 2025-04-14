@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
 const Booking = () => {
   const fileInputRef = useRef(null);
@@ -12,7 +12,16 @@ const Booking = () => {
     date: '',
     time: '',
     notes: '',
-    inspirationPhoto: null
+    inspirationPhoto: null,
+    acceptedTerms: false
+  });
+
+  // State for validation errors
+  const [validationErrors, setValidationErrors] = useState({
+    email: '',
+    phone: '',
+    date: '',
+    time: ''
   });
 
   // State for selected services
@@ -28,6 +37,61 @@ const Booking = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [submitError, setSubmitError] = useState('');
+  
+  // State for terms dropdown visibility
+  const [showTerms, setShowTerms] = useState(false);
+
+  // Set min date to today
+  const [minDate, setMinDate] = useState('');
+  const [minTime, setMinTime] = useState('');
+
+  // Set minimum date and time on component mount
+  useEffect(() => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    const formattedDate = `${year}-${month}-${day}`;
+    setMinDate(formattedDate);
+
+    // Set default min time to current time if today is selected
+    updateMinTime(formattedDate);
+  }, []);
+
+  // Update minimum time when date changes
+  const updateMinTime = (selectedDate) => {
+    const today = new Date();
+    const selectedDateObj = new Date(selectedDate);
+    
+    // Reset time field if previously selected time is now invalid
+    if (formData.date === selectedDate && formData.time && isDateToday(selectedDate)) {
+      const currentHour = today.getHours();
+      const currentMinute = today.getMinutes();
+      const [selectedHour, selectedMinute] = formData.time.split(':').map(Number);
+      
+      if (selectedHour < currentHour || (selectedHour === currentHour && selectedMinute < currentMinute)) {
+        setFormData(prev => ({ ...prev, time: '' }));
+      }
+    }
+    
+    // Only set min time if selected date is today
+    if (isDateToday(selectedDate)) {
+      const hours = String(today.getHours()).padStart(2, '0');
+      const minutes = String(today.getMinutes()).padStart(2, '0');
+      setMinTime(`${hours}:${minutes}`);
+    } else {
+      setMinTime(''); // No min time for future dates
+    }
+  };
+  
+  // Check if selected date is today
+  const isDateToday = (dateString) => {
+    const today = new Date();
+    const selectedDate = new Date(dateString);
+    return today.getFullYear() === selectedDate.getFullYear() &&
+           today.getMonth() === selectedDate.getMonth() &&
+           today.getDate() === selectedDate.getDate();
+  };
 
   // Locations
   const locations = [
@@ -47,8 +111,6 @@ const Booking = () => {
     { id: 8, name: 'French Tips', price: 10 }
   ];
 
-  
-
   // Calculate total price
   const calculateTotal = () => {
     return selectedServices.reduce((total, serviceId) => {
@@ -57,13 +119,133 @@ const Booking = () => {
     }, 0);
   };
 
-  // Handle input changes
+  // Validate email format
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return "Please enter a valid email address";
+    }
+    return "";
+  };
+
+  // Validate phone number (North American format with flexibility)
+  const validatePhone = (phone) => {
+    // Allow formats like: (123) 456-7890, 123-456-7890, 123.456.7890, 1234567890
+    const phoneRegex = /^(\+\d{1,2}\s?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/;
+    if (!phoneRegex.test(phone)) {
+      return "Please enter a valid phone number";
+    }
+    return "";
+  };
+
+  // Validate date is in the future
+  const validateDate = (date) => {
+    if (!date) return "Date is required";
+    
+    const selectedDate = new Date(date);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Set to beginning of day for comparison
+    
+    if (selectedDate < today) {
+      return "Please select a current or future date";
+    }
+    return "";
+  };
+
+  // Validate time is in the future if date is today
+  const validateTime = (time, date) => {
+    if (!time) return "Time is required";
+    if (!date) return ""; // Skip validation if no date selected
+    
+    const selectedDate = new Date(date);
+    const today = new Date();
+    
+    // Only validate time if date is today
+    if (selectedDate.getDate() === today.getDate() &&
+        selectedDate.getMonth() === today.getMonth() &&
+        selectedDate.getFullYear() === today.getFullYear()) {
+      
+      const [hours, minutes] = time.split(':').map(Number);
+      const selectedDateTime = new Date(selectedDate);
+      selectedDateTime.setHours(hours, minutes, 0, 0);
+      
+      if (selectedDateTime <= new Date()) {
+        return "Please select a future time";
+      }
+    }
+    return "";
+  };
+
+  // Handle input changes with validation
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target;
+    const newValue = type === 'checkbox' ? checked : value;
+    
     setFormData(prevData => ({
       ...prevData,
-      [name]: value
+      [name]: newValue
     }));
+    
+    // Validate fields
+    let error = "";
+    switch (name) {
+      case 'email':
+        error = validateEmail(value);
+        setValidationErrors(prev => ({ ...prev, email: error }));
+        break;
+      case 'phone':
+        error = validatePhone(value);
+        setValidationErrors(prev => ({ ...prev, phone: error }));
+        break;
+      case 'date':
+        error = validateDate(value);
+        setValidationErrors(prev => ({ ...prev, date: error }));
+        // Update min time when date changes
+        updateMinTime(value);
+        // Also validate time if it exists
+        if (formData.time) {
+          const timeError = validateTime(formData.time, value);
+          setValidationErrors(prev => ({ ...prev, time: timeError }));
+        }
+        break;
+      case 'time':
+        error = validateTime(value, formData.date);
+        setValidationErrors(prev => ({ ...prev, time: error }));
+        break;
+      default:
+        break;
+    }
+  };
+
+  // Format phone number as user types
+  const formatPhoneNumber = (value) => {
+    if (!value) return value;
+    
+    // Remove all non-digit characters
+    const phoneNumber = value.replace(/[^\d]/g, '');
+    
+    // Format based on length
+    if (phoneNumber.length < 4) return phoneNumber;
+    if (phoneNumber.length < 7) {
+      return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3)}`;
+    }
+    return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6, 10)}`;
+  };
+
+  // Handle phone input specifically
+  const handlePhoneInput = (e) => {
+    const formattedPhone = formatPhoneNumber(e.target.value);
+    
+    // Only update if we successfully formatted the number or it's empty
+    if (formattedPhone || e.target.value === '') {
+      setFormData(prevData => ({
+        ...prevData,
+        phone: formattedPhone
+      }));
+      
+      const error = validatePhone(formattedPhone);
+      setValidationErrors(prev => ({ ...prev, phone: error }));
+    }
   };
 
   // Handle service selection
@@ -129,14 +311,46 @@ const Booking = () => {
     fileInputRef.current.click();
   };
 
+  // Toggle terms and conditions visibility
+  const toggleTerms = () => {
+    setShowTerms(!showTerms);
+  };
+
+  // Validate all form fields
+  const validateForm = () => {
+    const errors = {
+      email: validateEmail(formData.email),
+      phone: validatePhone(formData.phone),
+      date: validateDate(formData.date),
+      time: validateTime(formData.time, formData.date)
+    };
+    
+    setValidationErrors(errors);
+    
+    // Return true if no errors
+    return !Object.values(errors).some(error => error !== "");
+  };
+
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Validate form fields
+    if (!validateForm()) {
+      setSubmitError('Please correct the errors in the form');
+      return;
+    }
     
     if (selectedServices.length === 0) {
       setSubmitError('Please select at least one service');
       return;
     }
+    
+    if (!formData.acceptedTerms) {
+      setSubmitError('Please accept the terms and conditions');
+      return;
+    }
+    
     window.scrollTo(0, 0);
     
     setIsSubmitting(true);
@@ -155,6 +369,7 @@ const Booking = () => {
       submitData.append('time', formData.time);
       submitData.append('notes', formData.notes || '');
       submitData.append('serviceName', selectedService.name);
+      submitData.append('acceptedTerms', formData.acceptedTerms);
       
       if (formData.inspirationPhoto) {
         submitData.append('image', formData.inspirationPhoto);
@@ -185,7 +400,8 @@ const Booking = () => {
         date: '',
         time: '',
         notes: '',
-        inspirationPhoto: null
+        inspirationPhoto: null,
+        acceptedTerms: false
       });
       setSelectedServices([]);
       setPreviewUrl(null);
@@ -239,8 +455,13 @@ const Booking = () => {
                   value={formData.email}
                   onChange={handleChange}
                   required
-                  className="w-full p-3 border border-pink-300 rounded focus:outline-none focus:ring-2 focus:ring-pink-400"
+                  className={`w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-pink-400 ${
+                    validationErrors.email ? 'border-red-500' : 'border-pink-300'
+                  }`}
                 />
+                {validationErrors.email && (
+                  <p className="text-red-500 text-sm mt-1">{validationErrors.email}</p>
+                )}
               </div>
               
               <div>
@@ -250,10 +471,16 @@ const Booking = () => {
                   id="phone"
                   name="phone"
                   value={formData.phone}
-                  onChange={handleChange}
+                  onChange={handlePhoneInput}
                   required
-                  className="w-full p-3 border border-pink-300 rounded focus:outline-none focus:ring-2 focus:ring-pink-400"
+                  placeholder="(123) 456-7890"
+                  className={`w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-pink-400 ${
+                    validationErrors.phone ? 'border-red-500' : 'border-pink-300'
+                  }`}
                 />
+                {validationErrors.phone && (
+                  <p className="text-red-500 text-sm mt-1">{validationErrors.phone}</p>
+                )}
               </div>
               
               <div>
@@ -283,9 +510,15 @@ const Booking = () => {
                   name="date"
                   value={formData.date}
                   onChange={handleChange}
+                  min={minDate}
                   required
-                  className="w-full p-3 border border-pink-300 rounded focus:outline-none focus:ring-2 focus:ring-pink-400"
+                  className={`w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-pink-400 ${
+                    validationErrors.date ? 'border-red-500' : 'border-pink-300'
+                  }`}
                 />
+                {validationErrors.date && (
+                  <p className="text-red-500 text-sm mt-1">{validationErrors.date}</p>
+                )}
               </div>
               
               <div>
@@ -296,9 +529,15 @@ const Booking = () => {
                   name="time"
                   value={formData.time}
                   onChange={handleChange}
+                  min={isDateToday(formData.date) ? minTime : undefined}
                   required
-                  className="w-full p-3 border border-pink-300 rounded focus:outline-none focus:ring-2 focus:ring-pink-400"
+                  className={`w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-pink-400 ${
+                    validationErrors.time ? 'border-red-500' : 'border-pink-300'
+                  }`}
                 />
+                {validationErrors.time && (
+                  <p className="text-red-500 text-sm mt-1">{validationErrors.time}</p>
+                )}
               </div>
             </div>
             
@@ -414,6 +653,72 @@ const Booking = () => {
               ></textarea>
             </div>
             
+            {/* Terms and Conditions Section */}
+            <div className="mt-8">
+              <div className="border border-pink-300 rounded-lg bg-white overflow-hidden">
+                <div 
+                  className="flex justify-between items-center p-4 cursor-pointer bg-pink-100 hover:bg-pink-200 transition-colors"
+                  onClick={toggleTerms}
+                >
+                  <h3 className="font-semibold text-pink-700">Terms and Conditions</h3>
+                  <div className="text-pink-500">
+                    {showTerms ? (
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                      </svg>
+                    ) : (
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                      </svg>
+                    )}
+                  </div>
+                </div>
+                
+                {showTerms && (
+                  <div className="p-4 text-sm text-gray-700 max-h-64 overflow-y-auto">
+                    <h4 className="font-semibold mb-2">Booking Policy</h4>
+                    <p className="mb-3">By making a booking with Nails by Anam, you agree to the following terms and conditions:</p>
+                    
+                    <h5 className="font-semibold mt-3">Cancellation Policy</h5>
+                    <p className="mb-2">• Appointments must be cancelled or rescheduled at least 24 hours in advance.</p>
+                    <p className="mb-2">• Late cancellations (less than 24 hours notice) may incur a 50% charge of the service price.</p>
+                    <p className="mb-3">• No-shows will be charged the full service amount.</p>
+                    
+                    <h5 className="font-semibold mt-3">Arrival Time</h5>
+                    <p className="mb-2">• Please arrive 5-10 minutes before your scheduled appointment time.</p>
+                    <p className="mb-3">• Late arrivals may result in shortened service time or rescheduling if necessary.</p>
+                    
+                    <h5 className="font-semibold mt-3">Health & Safety</h5>
+                    <p className="mb-2">• Please inform us of any allergies, medical conditions, or special requirements before your appointment.</p>
+                    <p className="mb-3">• We reserve the right to refuse service if there are any contagious nail or skin conditions.</p>
+                    
+                    <h5 className="font-semibold mt-3">Satisfaction Guarantee</h5>
+                    <p className="mb-2">• If you are not satisfied with your service, please let us know within 7 days and we will make it right.</p>
+                    <p className="mb-3">• Refunds are provided at our discretion.</p>
+                    
+                    <h5 className="font-semibold mt-3">Deposits</h5>
+                    <p className="mb-2">• For services over $50, a deposit may be required to secure your booking.</p>
+                    <p className="mb-2">• Deposits are non-refundable for cancellations with less than 24 hours notice.</p>
+                  </div>
+                )}
+              </div>
+              
+              <div className="mt-4 flex items-start">
+                <input
+                  type="checkbox"
+                  id="acceptTerms"
+                  name="acceptedTerms"
+                  checked={formData.acceptedTerms}
+                  onChange={handleChange}
+                  required
+                  className="mt-1 h-4 w-4 text-pink-500 border-pink-300 rounded focus:ring-pink-400"
+                />
+                <label htmlFor="acceptTerms" className="ml-2 text-gray-700">
+                  I have read and agree to the terms and conditions*
+                </label>
+              </div>
+            </div>
+            
             <div className="mt-8 text-center">
               <button
                 type="submit"
@@ -425,7 +730,6 @@ const Booking = () => {
             </div>
           </form>
         )}
-
       </div>
     </div>
   );

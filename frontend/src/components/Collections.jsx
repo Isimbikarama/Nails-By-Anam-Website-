@@ -7,34 +7,55 @@ const collections = [
     title: 'Super Hero Collection',
     description: 'Bold designs inspired by your favorite comic book characters.',
     price: '$65',
-    image: 'https://nailzinbloom.com/wp-content/uploads/2024/10/image-82.png', // Replace with your actual image path
+    images: [
+      'https://nailzinbloom.com/wp-content/uploads/2024/10/image-82.png',
+      'https://nailzinbloom.com/wp-content/uploads/2024/10/image-82.png',
+      'https://nailzinbloom.com/wp-content/uploads/2024/10/image-82.png',
+      'https://dreammanicures.com/wp-content/uploads/2024/07/glamnailsbygriselda-hello-kitty-french-tips-600x600.jpeg'
+    ],
   },
   {
     id: 2,
     title: 'Sanrio Collection',
     description: 'Cute and playful designs featuring Sanrio characters and themes.',
     price: '$70',
-    image: 'https://dreammanicures.com/wp-content/uploads/2024/07/glamnailsbygriselda-hello-kitty-french-tips-600x600.jpeg', // Replace with your actual image path
+    images: [
+      'https://dreammanicures.com/wp-content/uploads/2024/07/glamnailsbygriselda-hello-kitty-french-tips-600x600.jpeg',
+      'https://nailzinbloom.com/wp-content/uploads/2024/10/image-82.png',
+      'https://dreammanicures.com/wp-content/uploads/2024/07/glamnailsbygriselda-hello-kitty-french-tips-600x600.jpeg',
+      'https://dreammanicures.com/wp-content/uploads/2024/07/glamnailsbygriselda-hello-kitty-french-tips-600x600.jpeg'
+    ],
   },
   {
     id: 3,
     title: 'Gaming Collection',
     description: 'Nail art inspired by popular video games and gaming culture.',
     price: '$65',
-    image: 'https://i.redd.it/fb4gbjyhatl41.jpg', // Replace with your actual image path
+    images: [
+      'https://i.redd.it/fb4gbjyhatl41.jpg',
+      'https://nailzinbloom.com/wp-content/uploads/2024/10/image-82.png',
+      'https://i.redd.it/fb4gbjyhatl41.jpg',
+      'https://i.redd.it/fb4gbjyhatl41.jpg'
+    ],
   },
   {
     id: 4,
     title: 'Luxury Collection',
     description: 'Elegant and sophisticated designs with premium finishes.',
     price: '$80',
-    image: 'https://mluxnails.ca/photos/home/1.jpg', // Replace with your actual image path
+    images: [
+      'https://mluxnails.ca/photos/home/1.jpg',
+      'https://nailzinbloom.com/wp-content/uploads/2024/10/image-82.png',
+      'https://mluxnails.ca/photos/home/1.jpg',
+      'https://mluxnails.ca/photos/home/1.jpg'
+    ],
   },
 ];
 
 const Collections = () => {
   const carouselRef = useRef(null);
   const [selectedCollection, setSelectedCollection] = useState(null);
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
   
   // Set up refs instead of state to avoid re-renders during scrolling
   const isTransitioning = useRef(false);
@@ -123,10 +144,12 @@ const Collections = () => {
   
   const openModal = (collection) => {
     setSelectedCollection(collection);
+    setActiveImageIndex(0);
   };
   
   const closeModal = () => {
     setSelectedCollection(null);
+    setActiveImageIndex(0);
   };
 
   const navigate = useNavigate(); 
@@ -173,19 +196,16 @@ const Collections = () => {
             <div
               key={`${collection.id}-${index}`}
               onClick={() => openModal(collection)}
-              className="cursor-pointer flex-shrink-0 w-[320px] mr-6 snap-center"
+              className="cursor-pointer flex-shrink-0 w-[400px]  mr-6 snap-center"
             >
-            <div className="bg-white rounded-full shadow-md hover:scale-105 transition-transform duration-300 ease-in-out overflow-hidden">
+            <div className="bg-white rounded-2xl  shadow-md hover:scale-105 transition-transform duration-300 ease-in-out overflow-hidden">
                 <div className="p-2">
                   <img
-                    src={collection.image}
+                    src={collection.images[0]}
                     alt={collection.title}
                     className="w-full scale-125 h-48 object-cover"
                   />
                 </div>
-                
-                  
-                
               </div>
               <h3 className="p-3 text-center text-xl font-semibold mb-1" style={{fontFamily:"PTSerif-Regular"}}>{collection.title}</h3>
             </div>
@@ -203,10 +223,10 @@ const Collections = () => {
         }
       `}</style>
 
-      {/* Modal with pink overlay background */}
+      {/* Modal with expanded image gallery */}
       {selectedCollection && (
-        <div className="fixed inset-0 flex justify-center backdrop-blur items-center z-50" >
-          <div className="relative bg-white rounded-2xl shadow-lg w-[90%] max-w-md p-8 mx-auto my-auto transform transition-all">
+        <div className="fixed inset-0 flex justify-center backdrop-blur items-center z-50">
+          <div className="relative bg-white rounded-2xl shadow-lg w-[90%] max-w-4xl p-8 mx-auto my-auto transform transition-all">
             <button
               onClick={closeModal}
               className="absolute top-4 right-4 text-gray-600 hover:text-black text-xl font-bold"
@@ -216,11 +236,35 @@ const Collections = () => {
 
             <div className="flex flex-col items-center">
               <h3 className="text-2xl font-bold mb-4 text-center">{selectedCollection.title}</h3>
-              <img
-                src={selectedCollection.image}
-                alt={selectedCollection.title}
-                className="w-full h-60 object-cover rounded-lg mb-4"
-              />
+              
+              {/* Main image display */}
+              <div className="w-full mb-4">
+                <img
+                  src={selectedCollection.images[activeImageIndex]}
+                  alt={`${selectedCollection.title} - View ${activeImageIndex + 1}`}
+                  className="w-full h-64 md:h-80 object-cover rounded-lg"
+                />
+              </div>
+              
+              {/* Thumbnail gallery */}
+              <div className="flex justify-center gap-2 mb-4 w-full overflow-x-auto">
+                {selectedCollection.images.map((image, idx) => (
+                  <div 
+                    key={idx}
+                    onClick={() => setActiveImageIndex(idx)}
+                    className={`cursor-pointer border-2 rounded-md overflow-hidden ${
+                      activeImageIndex === idx ? 'border-pink-500' : 'border-gray-200'
+                    }`}
+                  >
+                    <img 
+                      src={image} 
+                      alt={`${selectedCollection.title} thumbnail ${idx + 1}`}
+                      className="w-16 h-16 object-cover"
+                    />
+                  </div>
+                ))}
+              </div>
+              
               <p className="text-gray-700 mb-4 text-center">{selectedCollection.description}</p>
               <p className="text-xl font-semibold text-gray-900 text-center mb-4">
                 Starting at: {selectedCollection.price}

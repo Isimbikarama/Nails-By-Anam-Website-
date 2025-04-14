@@ -1,9 +1,5 @@
 @import "tailwindcss";
 
-@theme {
-    --color-primary: #FFFFFF;
-}
-
 @font-face {
     font-family: 'BebasNeue-Regular';
     src: url('/src/assets/fonts/BebasNeue-Regular.ttf') format('truetype');
@@ -35,9 +31,14 @@
     src: url('/src/assets/fonts/PTSerif-BoldItalic.ttf') format('truetype');
 }
 
-body {
+/* Apply background gradient and ensure it shows during overscroll */
+html, body {
     background: linear-gradient(90deg, #FFAABE 25%, #fdd0da 100%);
     background-size: cover;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overscroll-behavior: none; /* Optional: prevents scroll chaining */
 }
 
 .text-vw-25 {
@@ -66,9 +67,7 @@ body {
                  0 0 7.5px rgba(255, 255, 255, 0.2);
 }
 
-.active hr {
-    @apply block;
-}
+
 
 .popup-card {
     width: 80%;
@@ -97,9 +96,8 @@ body {
 
 .hide-scrollbar::-webkit-scrollbar {
     display: none; /* Hide scrollbar for Chrome, Safari, and Opera */
-  }
-  .hide-scrollbar {
+}
+.hide-scrollbar {
     -ms-overflow-style: none;  /* Hide scrollbar for IE and Edge */
     scrollbar-width: none;  /* Hide scrollbar for Firefox */
-  }
-
+}

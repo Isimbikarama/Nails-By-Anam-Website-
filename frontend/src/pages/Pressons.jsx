@@ -4,6 +4,7 @@ import Footer from '../components/Footer'
 import PressonMenu from '../components/PressonMenu'
 import Video from '../components/Video'
 import HowToOrder from '../components/HowToOrder'
+import ProductInfo from '../components/ProductInfo'
 
 const Pressons = () => {
   return (
@@ -12,7 +13,9 @@ const Pressons = () => {
         <Collection/>
         <PressonMenu/>
         <Video />
+        
         <HowToOrder />
+        <ProductInfo />
         <Footer/>
     </div>
   )

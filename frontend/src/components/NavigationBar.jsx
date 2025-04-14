@@ -13,7 +13,8 @@ const NavigationBar = () => {
   };
 
   return (
-    <div className='flex flex-col items-center justify-center text-lg py-2 mt-15 relative' style={{ fontFamily: 'PTSerif-Regular' }}>
+    <div className='flex flex-col items-center justify-center text-lg py-2 mt-15 mb-10 relative' style={{ fontFamily: 'PTSerif-Regular' }}>
+        
       {/* Hamburger menu for mobile - moved to left side */}
       <div className='md:hidden w-full flex justify-start px-4'>
         <button 
@@ -43,9 +44,7 @@ const NavigationBar = () => {
             <div className="w-full">
               <li className='py-2 text-xl font-medium border-b border-gray-100'>
                 <NavLink to="/services" onClick={toggleMenu}>Services</NavLink>
-                <NavLink to="/Promotions" onClick={toggleMenu} className="pl-4 text-lg text-gray-600">
-                  - Promotions
-                </NavLink>
+                
               </li>
             </div>
             <NavLink to="/pressons" onClick={toggleMenu} className="w-full">
@@ -83,14 +82,13 @@ const NavigationBar = () => {
           <div className="absolute opacity-0 group-hover:opacity-100 hover:opacity-100  w-40 z-50 transition-opacity duration-150 ease-in-out"
                >
             <div className="pt-2">
-              <NavLink to="/Promotions">
-                <li className='py-2 px-4 transition-colors duration-150'>Promotions</li>
-              </NavLink>
+             
             </div>
           </div>
         </div>
 
         <NavLink to="/pressons"><li className='py-1 px-3'>Press-Ons</li></NavLink>
+        <NavLink to="/CuticleOil"><li className='py-1 px-3'>Cuticle Oil</li></NavLink>
         <NavLink to="/booking"><li className='py-1 px-3'>Booking</li></NavLink>
         <NavLink to="/lookbook"><li className='py-1 px-3'>Lookbook</li></NavLink>
         

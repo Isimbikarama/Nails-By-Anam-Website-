@@ -37,11 +37,9 @@ const LookBook = () => {
 
   return (
     <div>
+    
+    <h1 className="text-7xl glow text-white my-6 text-center p-2" style={{fontFamily:'bebasNeue-Regular'}}>LookBook</h1>
     <div className='lg:p-20 p-8 items-center justify-center flex flex-col'>
-      <h1 className="text-white text-6xl md:text-7xl glow mb-6" style={{ fontFamily: 'BebasNeue-Regular' }}>
-        LookBook
-      </h1>
-      
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
         {nailPhotos.map((photo, index) => (
           <div key={index} className="cursor-pointer">

@@ -21,7 +21,7 @@ const About = () => {
       </div>
 
       {/* Text Content */}
-      <div className="text-center md:text-left max-w-md">
+      <div className="text-center w-1/2 max-w-3/4">
         <h1 className="text-white text-6xl md:text-7xl glow mb-6" style={{fontFamily: 'BebasNeue-Regular'}}>
           ABOUT ME
         </h1>

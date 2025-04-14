@@ -9,7 +9,7 @@ import Pressons from './pages/Pressons';
 import AboutPage from './pages/AboutPage';
 import Booking from './pages/Booking';
 import LookBook from './pages/LookBook';
-import Promotions from './pages/Promotions';
+import CuticleOil from './pages/CuticleOil';  
 import Events from './pages/Events';
 
 const App = () => {
@@ -24,7 +24,7 @@ const App = () => {
         <Route path="/about" element={<AboutPage />} /> 
         <Route path="/Booking" element ={<Booking/>}/>
         <Route path="/LookBook" element ={<LookBook/>} />
-        <Route path ="/Promotions" element = {<Promotions/>}/>    
+        <Route path="/CuticleOil" element={<CuticleOil />} /> 
       <Route path = "/Events" element = {<Events/>}/>
       </Routes>
     </div>

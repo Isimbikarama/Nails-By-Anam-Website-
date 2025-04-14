@@ -26,7 +26,7 @@ const handleCheckCollection= () => {
         </div>
 
         {/* Left Side Content */}
-        <div className="bg-pink-100 bg-opacity-70 p-8 rounded-3xl flex flex-col justify-center items-center text-center w-[300px] h-[300px] -mt-10 mx-auto lg:mt-0 lg:w-2/5 lg:h-[500px] shadow-lg lg:absolute lg:left-0 lg:top-1/2 lg:-translate-y-1/2 lg:-translate-x-[-10%] relative z-10">
+        <div className="bg-pink-100 bg-opacity-70 p-8 rounded-3xl flex flex-col justify-center items-center text-center w-6/7 h-[300px] -mt-10 mx-auto lg:mt-0 lg:w-2/5 lg:h-[500px] shadow-lg lg:absolute lg:left-0 lg:top-1/2 lg:-translate-y-1/2 lg:-translate-x-[-10%] relative z-10">
           <h2 className="text-xl lg:text-3xl text-black mb-4 lg:mb-6 leading-snug" style={{fontFamily:'PTSerif-Regular'}}>
             Nail's by Anam now offers personalized Press-on's via mail
           </h2>
