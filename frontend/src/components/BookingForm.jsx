@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 
 const Booking = () => {
   const fileInputRef = useRef(null);
+  const sizingPhotoRef = useRef(null);
   
   // State for form fields
   const [formData, setFormData] = useState({
@@ -13,7 +14,24 @@ const Booking = () => {
     time: '',
     notes: '',
     inspirationPhoto: null,
-    acceptedTerms: false
+    sizingPhoto: null,
+    acceptedTerms: false,
+    serviceType: '',
+    previouslySized: false
+  });
+
+  // State for nail sizes
+  const [nailSizes, setNailSizes] = useState({
+    leftThumb: '',
+    leftIndex: '',
+    leftMiddle: '',
+    leftRing: '',
+    leftPinky: '',
+    rightThumb: '',
+    rightIndex: '',
+    rightMiddle: '',
+    rightRing: '',
+    rightPinky: ''
   });
 
   // State for validation errors
@@ -29,9 +47,11 @@ const Booking = () => {
   
   // State for drag and drop
   const [dragActive, setDragActive] = useState(false);
+  const [sizingDragActive, setSizingDragActive] = useState(false);
   
-  // State for preview image
+  // State for preview images
   const [previewUrl, setPreviewUrl] = useState(null);
+  const [sizingPreviewUrl, setSizingPreviewUrl] = useState(null);
   
   // State for submission status
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -97,6 +117,12 @@ const Booking = () => {
   const locations = [
     { id: 'waterloo', name: 'Waterloo' },
     { id: 'markham', name: 'Markham' }
+  ];
+
+  // Service types
+  const serviceTypes = [
+    { id: 'nail-appointment', name: 'Nail Appointment' },
+    { id: 'press-ons', name: 'Press-ons' }
   ];
 
   // Services list based on website
@@ -217,6 +243,15 @@ const Booking = () => {
     }
   };
 
+  // Handle nail size input change
+  const handleNailSizeChange = (e) => {
+    const { name, value } = e.target;
+    setNailSizes(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
   // Format phone number as user types
   const formatPhoneNumber = (value) => {
     if (!value) return value;
@@ -259,46 +294,57 @@ const Booking = () => {
     });
   };
 
+  // Handle service type selection
+  const handleServiceTypeSelection = (typeId) => {
+    setFormData(prevData => ({
+      ...prevData,
+      serviceType: typeId,
+      previouslySized: false // Reset sizing status when changing service type
+    }));
+  };
+
   // Handle drag events
-  const handleDrag = (e) => {
+  const handleDrag = (e, isSizingPhoto = false) => {
     e.preventDefault();
     e.stopPropagation();
     if (e.type === 'dragenter' || e.type === 'dragover') {
-      setDragActive(true);
+      isSizingPhoto ? setSizingDragActive(true) : setDragActive(true);
     } else if (e.type === 'dragleave') {
-      setDragActive(false);
+      isSizingPhoto ? setSizingDragActive(false) : setDragActive(false);
     }
   };
 
   // Handle drop
-  const handleDrop = (e) => {
+  const handleDrop = (e, isSizingPhoto = false) => {
     e.preventDefault();
     e.stopPropagation();
-    setDragActive(false);
+    isSizingPhoto ? setSizingDragActive(false) : setDragActive(false);
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      handleFiles(e.dataTransfer.files[0]);
+      handleFiles(e.dataTransfer.files[0], isSizingPhoto);
     }
   };
 
   // Handle file input change
-  const handleFileChange = (e) => {
+  const handleFileChange = (e, isSizingPhoto = false) => {
     if (e.target.files && e.target.files[0]) {
-      handleFiles(e.target.files[0]);
+      handleFiles(e.target.files[0], isSizingPhoto);
     }
   };
 
   // Process file
-  const handleFiles = (file) => {
+  const handleFiles = (file, isSizingPhoto = false) => {
     if (file.type.startsWith('image/')) {
       setFormData(prevData => ({
         ...prevData,
-        inspirationPhoto: file
+        [isSizingPhoto ? 'sizingPhoto' : 'inspirationPhoto']: file
       }));
       
       // Create preview URL
       const reader = new FileReader();
       reader.onloadend = () => {
-        setPreviewUrl(reader.result);
+        isSizingPhoto 
+          ? setSizingPreviewUrl(reader.result)
+          : setPreviewUrl(reader.result);
       };
       reader.readAsDataURL(file);
     } else {
@@ -307,8 +353,8 @@ const Booking = () => {
   };
 
   // Handle button click for file upload
-  const onButtonClick = () => {
-    fileInputRef.current.click();
+  const onButtonClick = (isSizingPhoto = false) => {
+    isSizingPhoto ? sizingPhotoRef.current.click() : fileInputRef.current.click();
   };
 
   // Toggle terms and conditions visibility
@@ -331,6 +377,15 @@ const Booking = () => {
     return !Object.values(errors).some(error => error !== "");
   };
 
+  // Check if nail sizes are required and if they've been provided
+  const validateNailSizes = () => {
+    if (formData.serviceType === 'press-ons' && !formData.previouslySized) {
+      // Check if all nail sizes are filled
+      return !Object.values(nailSizes).some(size => size === '');
+    }
+    return true;
+  };
+
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -341,8 +396,23 @@ const Booking = () => {
       return;
     }
     
-    if (selectedServices.length === 0) {
+    if (formData.serviceType !== 'press-ons' && selectedServices.length === 0) {
       setSubmitError('Please select at least one service');
+      return;
+    }
+    
+    if (!formData.serviceType) {
+      setSubmitError('Please select a service type');
+      return;
+    }
+    
+    if (formData.serviceType === 'press-ons' && !formData.previouslySized && !validateNailSizes()) {
+      setSubmitError('Please provide all nail sizes');
+      return;
+    }
+    
+    if (formData.serviceType === 'press-ons' && !formData.previouslySized && !formData.sizingPhoto) {
+      setSubmitError('Please upload a photo of your hands for sizing');
       return;
     }
     
@@ -369,10 +439,26 @@ const Booking = () => {
       submitData.append('time', formData.time);
       submitData.append('notes', formData.notes || '');
       submitData.append('serviceName', selectedService.name);
+      submitData.append('serviceType', formData.serviceType);
       submitData.append('acceptedTerms', formData.acceptedTerms);
       
+      if (formData.serviceType === 'press-ons') {
+        submitData.append('previouslySized', formData.previouslySized);
+        
+        if (!formData.previouslySized) {
+          // Add nail sizes to form data
+          Object.entries(nailSizes).forEach(([finger, size]) => {
+            submitData.append(finger, size);
+          });
+          
+          if (formData.sizingPhoto) {
+            submitData.append('sizingPhoto', formData.sizingPhoto);
+          }
+        }
+      }
+      
       if (formData.inspirationPhoto) {
-        submitData.append('image', formData.inspirationPhoto);
+        submitData.append('inspirationPhoto', formData.inspirationPhoto);
       }
 
       console.log('Submitting booking:', Object.fromEntries(submitData.entries()));
@@ -401,10 +487,26 @@ const Booking = () => {
         time: '',
         notes: '',
         inspirationPhoto: null,
-        acceptedTerms: false
+        sizingPhoto: null,
+        acceptedTerms: false,
+        serviceType: '',
+        previouslySized: false
       });
       setSelectedServices([]);
       setPreviewUrl(null);
+      setSizingPreviewUrl(null);
+      setNailSizes({
+        leftThumb: '',
+        leftIndex: '',
+        leftMiddle: '',
+        leftRing: '',
+        leftPinky: '',
+        rightThumb: '',
+        rightIndex: '',
+        rightMiddle: '',
+        rightRing: '',
+        rightPinky: ''
+      });
     } catch (error) {
       console.error('Booking error:', error);
       setSubmitError(error.message || 'Failed to create booking');
@@ -541,47 +643,330 @@ const Booking = () => {
               </div>
             </div>
             
+            {/* Service Type Selection */}
             <div className="mt-8">
-              <label className="block text-pink-700 mb-2">Services*</label>
+              <label className="block text-pink-700 mb-2">Service Type*</label>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {services.map(service => (
+                {serviceTypes.map(type => (
                   <div 
-                    key={service.id} 
-                    className={`border p-3 rounded cursor-pointer transition-colors ${
-                      selectedServices.includes(service.id) 
+                    key={type.id} 
+                    className={`border p-4 rounded cursor-pointer transition-colors text-center ${
+                      formData.serviceType === type.id 
                         ? 'bg-pink-200 border-pink-400' 
                         : 'bg-white border-pink-200 hover:border-pink-300'
                     }`}
-                    onClick={() => handleServiceSelection(service.id)}
+                    onClick={() => handleServiceTypeSelection(type.id)}
                   >
-                    <div className="flex justify-between items-center">
-                      <span>{service.name}</span>
-                      <span className="font-semibold">${service.price}</span>
-                    </div>
+                    <span className="font-medium">{type.name}</span>
                   </div>
                 ))}
               </div>
-              {selectedServices.length > 0 && (
-                <div className="mt-4 p-4 bg-white rounded-lg border border-pink-300">
-                  <h3 className="font-semibold text-pink-800 mb-2">Selected Services:</h3>
-                  <ul className="mb-4">
-                    {selectedServices.map(serviceId => {
-                      const service = services.find(s => s.id === serviceId);
-                      return (
-                        <li key={serviceId} className="flex justify-between">
-                          <span>{service.name}</span>
-                          <span>${service.price}</span>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                  <div className="border-t border-pink-200 pt-2 flex justify-between font-bold text-lg">
-                    <span>Total:</span>
-                    <span>${calculateTotal()}</span>
+            </div>
+            
+            {/* Press-ons specific fields */}
+            {formData.serviceType === 'press-ons' && (
+              <div className="mt-6 p-4 bg-white rounded-lg border border-pink-300">
+                <h3 className="font-semibold text-pink-800 mb-3">Press-ons Details</h3>
+                
+                <div className="mb-4">
+                  <label className="block text-pink-700 mb-2">Have you been sized with us before?*</label>
+                  <div className="flex space-x-4">
+                    <label className="inline-flex items-center cursor-pointer">
+                      <input
+                        type="radio"
+                        name="previouslySized"
+                        checked={formData.previouslySized === true}
+                        onChange={() => setFormData(prev => ({ ...prev, previouslySized: true }))}
+                        className="form-radio h-5 w-5 text-pink-500"
+                      />
+                      <span className="ml-2">Yes</span>
+                    </label>
+                    <label className="inline-flex items-center cursor-pointer">
+                      <input
+                        type="radio"
+                        name="previouslySized"
+                        checked={formData.previouslySized === false}
+                        onChange={() => setFormData(prev => ({ ...prev, previouslySized: false }))}
+                        className="form-radio h-5 w-5 text-pink-500"
+                      />
+                      <span className="ml-2">No</span>
+                    </label>
                   </div>
                 </div>
-              )}
-            </div>
+                
+                {formData.previouslySized ? (
+                  <div className="bg-pink-100 p-3 rounded-md text-pink-800">
+                    Great! We'll use your nail sizes on file for your press-ons order.
+                  </div>
+                ) : (
+                  <>
+                    <div className="mb-4">
+                      <h4 className="font-medium text-pink-700 mb-3">Please enter your nail sizes (mm)*</h4>
+                      <div className="grid grid-cols-2 gap-x-6 gap-y-3">
+                        <div>
+                          <h5 className="font-medium mb-2">Left Hand</h5>
+                          <div className="space-y-2">
+                            <div className="flex items-center">
+                              <label className="w-20">Thumb:</label>
+                              <input
+                                type="number"
+                                name="leftThumb"
+                                value={nailSizes.leftThumb}
+                                onChange={handleNailSizeChange}
+                                min="1"
+                                max="12"
+                                step="1"
+                                required
+                                className="w-16 p-2 border border-pink-300 rounded focus:outline-none focus:ring-2 focus:ring-pink-400"
+                              />
+                            </div>
+                            <div className="flex items-center">
+                              <label className="w-20">Index:</label>
+                              <input
+                                type="number"
+                                name="leftIndex"
+                                value={nailSizes.leftIndex}
+                                onChange={handleNailSizeChange}
+                                min="1"
+                                max="12"
+                                step="1"
+                                required
+                                className="w-16 p-2 border border-pink-300 rounded focus:outline-none focus:ring-2 focus:ring-pink-400"
+                              />
+                            </div>
+                            <div className="flex items-center">
+                              <label className="w-20">Middle:</label>
+                              <input
+                                type="number"
+                                name="leftMiddle"
+                                value={nailSizes.leftMiddle}
+                                onChange={handleNailSizeChange}
+                                min="1"
+                                max="12"
+                                step="1"
+                                required
+                                className="w-16 p-2 border border-pink-300 rounded focus:outline-none focus:ring-2 focus:ring-pink-400"
+                              />
+                            </div>
+                            <div className="flex items-center">
+                              <label className="w-20">Ring:</label>
+                              <input
+                                type="number"
+                                name="leftRing"
+                                value={nailSizes.leftRing}
+                                onChange={handleNailSizeChange}
+                                min="1"
+                                max="12"
+                                step="1"
+                                required
+                                className="w-16 p-2 border border-pink-300 rounded focus:outline-none focus:ring-2 focus:ring-pink-400"
+                              />
+                            </div>
+                            <div className="flex items-center">
+                              <label className="w-20">Pinky:</label>
+                              <input
+                                type="number"
+                                name="leftPinky"
+                                value={nailSizes.leftPinky}
+                                onChange={handleNailSizeChange}
+                                min="1"
+                                max="12"
+                                step="1"
+                                required
+                                className="w-16 p-2 border border-pink-300 rounded focus:outline-none focus:ring-2 focus:ring-pink-400"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div>
+                          <h5 className="font-medium mb-2">Right Hand</h5>
+                          <div className="space-y-2">
+                            <div className="flex items-center">
+                              <label className="w-20">Thumb:</label>
+                              <input
+                                type="number"
+                                name="rightThumb"
+                                value={nailSizes.rightThumb}
+                                onChange={handleNailSizeChange}
+                                min="1"
+                                max="12"
+                                step="1"
+                                required
+                                className="w-16 p-2 border border-pink-300 rounded focus:outline-none focus:ring-2 focus:ring-pink-400"
+                              />
+                            </div>
+                            <div className="flex items-center">
+                              <label className="w-20">Index:</label>
+                              <input
+                                type="number"
+                                name="rightIndex"
+                                value={nailSizes.rightIndex}
+                               
+
+                                  onChange={handleNailSizeChange}
+                                min="1"
+                                max="12"
+                                step="1"
+                                required
+                                className="w-16 p-2 border border-pink-300 rounded focus:outline-none focus:ring-2 focus:ring-pink-400"
+                              />
+                            </div>
+                            <div className="flex items-center">
+                              <label className="w-20">Middle:</label>
+                              <input
+                                type="number"
+                                name="rightMiddle"
+                                value={nailSizes.rightMiddle}
+                                onChange={handleNailSizeChange}
+                                min="1"
+                                max="12"
+                                step="1"
+                                required
+                                className="w-16 p-2 border border-pink-300 rounded focus:outline-none focus:ring-2 focus:ring-pink-400"
+                              />
+                            </div>
+                            <div className="flex items-center">
+                              <label className="w-20">Ring:</label>
+                              <input
+                                type="number"
+                                name="rightRing"
+                                value={nailSizes.rightRing}
+                                onChange={handleNailSizeChange}
+                                min="1"
+                                max="12"
+                                step="1"
+                                required
+                                className="w-16 p-2 border border-pink-300 rounded focus:outline-none focus:ring-2 focus:ring-pink-400"
+                              />
+                            </div>
+                            <div className="flex items-center">
+                              <label className="w-20">Pinky:</label>
+                              <input
+                                type="number"
+                                name="rightPinky"
+                                value={nailSizes.rightPinky}
+                                onChange={handleNailSizeChange}
+                                min="1"
+                                max="12"
+                                step="1"
+                                required
+                                className="w-16 p-2 border border-pink-300 rounded focus:outline-none focus:ring-2 focus:ring-pink-400"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Nail sizing photo upload */}
+                    <div className="mt-4">
+                      <label className="block text-pink-700 mb-2">
+                        Please take a picture of your left and right hand next to a quarter and upload*
+                      </label>
+                      <div 
+                        className={`border-2 border-dashed p-6 rounded-lg text-center ${
+                          sizingDragActive ? 'border-pink-500 bg-pink-50' : 'border-pink-300'
+                        } ${sizingPreviewUrl ? 'p-2' : 'p-6'}`}
+                        onDragEnter={(e) => handleDrag(e, true)}
+                        onDragOver={(e) => handleDrag(e, true)}
+                        onDragLeave={(e) => handleDrag(e, true)}
+                        onDrop={(e) => handleDrop(e, true)}
+                      >
+                        {sizingPreviewUrl ? (
+                          <div className="relative">
+                            <img 
+                              src={sizingPreviewUrl} 
+                              alt="Sizing Preview" 
+                              className="max-h-48 mx-auto rounded" 
+                            />
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setSizingPreviewUrl(null);
+                                setFormData(prev => ({ ...prev, sizingPhoto: null }));
+                              }}
+                              className="absolute top-2 right-2 bg-pink-500 text-white rounded-full p-1 hover:bg-pink-600"
+                            >
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                            </button>
+                          </div>
+                        ) : (
+                          <>
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto text-pink-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <p className="text-pink-700 mb-2">Drag & drop your hand sizing photo here</p>
+                            <p className="text-pink-500 mb-4">or</p>
+                            <button
+                              type="button"
+                              onClick={() => onButtonClick(true)}
+                              className="bg-pink-500 hover:bg-pink-600 text-white font-medium py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-pink-400 focus:ring-opacity-50 transition duration-300"
+                            >
+                              Browse Files
+                            </button>
+                            <input
+                              ref={sizingPhotoRef}
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => handleFileChange(e, true)}
+                              className="hidden"
+                            />
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+            
+            {/* Services section - should only show when service type is NOT press-ons */}
+{formData.serviceType !== 'press-ons' && (
+  <div className="mt-8">
+    <label className="block text-pink-700 mb-2">Services*</label>
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      {services.map(service => (
+        <div 
+          key={service.id} 
+          className={`border p-3 rounded cursor-pointer transition-colors ${
+            selectedServices.includes(service.id) 
+              ? 'bg-pink-200 border-pink-400' 
+              : 'bg-white border-pink-200 hover:border-pink-300'
+          }`}
+          onClick={() => handleServiceSelection(service.id)}
+        >
+          <div className="flex justify-between items-center">
+            <span>{service.name}</span>
+            <span className="font-semibold">${service.price}</span>
+          </div>
+        </div>
+      ))}
+    </div>
+    {selectedServices.length > 0 && (
+      <div className="mt-4 p-4 bg-white rounded-lg border border-pink-300">
+        <h3 className="font-semibold text-pink-800 mb-2">Selected Services:</h3>
+        <ul className="mb-4">
+          {selectedServices.map(serviceId => {
+            const service = services.find(s => s.id === serviceId);
+            return (
+              <li key={serviceId} className="flex justify-between">
+                <span>{service.name}</span>
+                <span>${service.price}</span>
+              </li>
+            );
+          })}
+        </ul>
+        <div className="border-t border-pink-200 pt-2 flex justify-between font-bold text-lg">
+          <span>Total:</span>
+          <span>${calculateTotal()}</span>
+        </div>
+      </div>
+    )}
+  </div>
+)}
             
             <div className="mt-8">
               <label className="block text-pink-700 mb-2">Inspiration Photo (Optional)</label>

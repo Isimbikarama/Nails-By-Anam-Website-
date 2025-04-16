@@ -1,44 +1,61 @@
 @import "tailwindcss";
 
+/* Font fallbacks */
 @font-face {
     font-family: 'BebasNeue-Regular';
     src: url('/src/assets/fonts/BebasNeue-Regular.ttf') format('truetype');
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.6), 0 0 30px rgba(255, 255, 255, 0.4);
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+   
 }
 
 @font-face {
     font-family: 'Twister';
-    src: url('/src/assets/fonts/Twister.ttf') format('truetype');
+    src: local('Twister'),
+         url('/src/assets/fonts/Twister.ttf') format('truetype');
+         font-weight: normal;
+         font-style: normal;
+    font-display: swap;
 }
 
 @font-face {
     font-family: 'PTSerif-Regular';
-    src: url('/src/assets/fonts/PTSerif-Regular.ttf') format('truetype');  
+    src: local('PTSerif-Regular'),
+         url('/src/assets/fonts/PTSerif-Regular.ttf') format('truetype');
+         font-weight: normal;
+         font-style: normal;
+    font-display: swap;
 }
 
-@font-face {
-    font-family: 'PTSerif-Bold';
-    src: url('/src/assets/fonts/PTSerif-Bold.ttf') format('truetype');
-}
-
-@font-face {
-    font-family: 'PTSerif-Italic';
-    src: url('/src/assets/fonts/PTSerif-Italic.ttf') format('truetype');
-}
-
-@font-face {
-    font-family: 'PTSerif-BoldItalic';
-    src: url('/src/assets/fonts/PTSerif-BoldItalic.ttf') format('truetype');
-}
-
-/* Apply background gradient and ensure it shows during overscroll */
+/* Ensure background works on older browsers */
 html, body {
+    background: #FFAABE;  /* Fallback */
+    background: -webkit-linear-gradient(90deg, #FFAABE 25%, #fdd0da 100%);
+    background: -moz-linear-gradient(90deg, #FFAABE 25%, #fdd0da 100%);
     background: linear-gradient(90deg, #FFAABE 25%, #fdd0da 100%);
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
     background-size: cover;
-    height: 100%;
+    min-height: 100%;
     margin: 0;
     padding: 0;
     overscroll-behavior: none; /* Optional: prevents scroll chaining */
+}
+
+/* Add vendor prefixes for animations and transforms */
+.glow {
+    -webkit-text-shadow: 0 0 2.5px rgba(255, 255, 255, 0.5);
+    text-shadow: 0 0 2.5px rgba(255, 255, 255, 0.5);
+    text-shadow: 0 0 2.5px rgba(255, 255, 255, 0.5), 
+                 0 0 5px rgba(255, 255, 255, 0.3), 
+                 0 0 7.5px rgba(255, 255, 255, 0.2);
+}
+
+/* Fix mobile browser issues */
+* {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
 }
 
 .text-vw-25 {
@@ -60,14 +77,6 @@ html, body {
 .text-vw-5 {
     font-size: 3vw;
 }
-
-.glow {
-    text-shadow: 0 0 2.5px rgba(255, 255, 255, 0.5), 
-                 0 0 5px rgba(255, 255, 255, 0.3), 
-                 0 0 7.5px rgba(255, 255, 255, 0.2);
-}
-
-
 
 .popup-card {
     width: 80%;
@@ -94,10 +103,13 @@ html, body {
     z-index: 50;
 }
 
+/* Fix scrolling on older browsers */
+.hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+}
+
 .hide-scrollbar::-webkit-scrollbar {
     display: none; /* Hide scrollbar for Chrome, Safari, and Opera */
-}
-.hide-scrollbar {
-    -ms-overflow-style: none;  /* Hide scrollbar for IE and Edge */
-    scrollbar-width: none;  /* Hide scrollbar for Firefox */
 }

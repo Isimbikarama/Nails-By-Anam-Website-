@@ -9,10 +9,15 @@ export default defineConfig({
     react(),
     legacy({
       targets: [
-        '> 0.2%, not dead', // Target browsers with more than 0.2% usage globally (can adjust based on your needs)
-        'IE 11',
+        'defaults',
+        'not IE 11',
+        'iOS >= 10',
+        'Android >= 4.4',
+        'last 2 versions'
       ],
-      additionalLegacyPolyfills: ['regenerator-runtime/runtime'], // Required for async/await compatibility
+      polyfills: true,
+      additionalLegacyPolyfills: ['regenerator-runtime/runtime'],
+      modernPolyfills: true
     }),
   ],
   css: {
@@ -31,7 +36,15 @@ export default defineConfig({
             },
           },
         }),
-        autoprefixer, // Ensures proper prefixes for older browsers
+        autoprefixer({
+          overrideBrowserslist: [
+            '>0.2%',
+            'not dead',
+            'not op_mini all',
+            'iOS >= 10',
+            'Android >= 4.4'
+          ]
+        }),
       ],
     },
   },
