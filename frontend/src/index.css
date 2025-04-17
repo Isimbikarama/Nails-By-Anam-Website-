@@ -12,6 +12,8 @@
   --rose-200: #FECDD3;
   --rose-300: #FDA4AF;
   --rose-400: #FB7185;
+  --footer-from: #A5495B;
+  --footer-to: #3B1215;
 }
 
 /* Explicit color utilities */
@@ -38,6 +40,14 @@
 .border-pink-400 { border-color: #FB7185 !important; border-color: var(--pink-400, #FB7185) !important; }
 .border-rose-300 { border-color: #FDA4AF !important; border-color: var(--rose-300, #FDA4AF) !important; }
 
+/* Footer gradient fallback */
+.footer-gradient {
+  background: #A5495B !important; /* Solid fallback */
+  background: linear-gradient(to bottom, #A5495B 0%, #3B1215 100%) !important;
+  background: -webkit-gradient(linear, left top, left bottom, from(#A5495B), to(#3B1215)) !important;
+  background: -moz-linear-gradient(top, #A5495B, #3B1215) !important;
+}
+
 /* iOS specific fallbacks */
 @supports (-webkit-touch-callout: none) {
   [class*="bg-pink-"] { background-color: rgb(255, 245, 247); }
@@ -45,6 +55,11 @@
   [class*="text-pink-"] { color: rgb(111, 14, 53); }
   [class*="border-pink-"] { border-color: rgb(199, 34, 114); }
   [class*="border-rose-"] { border-color: rgb(199, 34, 114); }
+
+  .footer-gradient {
+    background: #A5495B !important; /* Solid fallback */
+    background: -webkit-linear-gradient(top, #A5495B 0%, #3B1215 100%) !important;
+  }
 }
 
 /* Font fallbacks */

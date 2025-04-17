@@ -50,6 +50,10 @@ export default defineConfig({
                   600: '#E11D48',
                   700: '#BE123C',
                   800: '#9F1239'
+                },
+                footer: {
+                  from: '#A5495B',
+                  to: '#3B1215'
                 }
               }
             },

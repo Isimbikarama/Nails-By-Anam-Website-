@@ -5,7 +5,7 @@ import { assets } from "../assets/assets";
 
 const Footer = () => {
   return (
-    <footer className=" w-full bg-gradient-to-b from-[#A5495B] to-[#3B1215] text-white py-12" style={{ fontFamily: 'PTSerif-Regular' }}>
+    <footer className="w-full footer-gradient text-white py-12" style={{ fontFamily: 'PTSerif-Regular' }}>
       <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-3 gap-12 items-center">
         {/* Quick Links */}
         <div className="text-center md:text-left">
@@ -44,13 +44,13 @@ const Footer = () => {
           <p className="text-lg mb-2">Any Questions?</p>
           <h2 className="text-2xl font-bold mb-4">Contact</h2>
           <div className="flex justify-center gap-6 text-4xl">
-            <a href="https://www.instagram.com/nailsbyanam_/" aria-label="Instagram" className="hover:text-pink-400">
+            <a href="https://www.instagram.com/nailsbyanam_/" aria-label="Instagram" className="hover:bg-pink-400">
               <FaInstagram />
             </a>
-            <a href="https://www.tiktok.com/@nailsbyanam_" aria-label="TikTok" className="hover:text-pink-400">
+            <a href="https://www.tiktok.com/@nailsbyanam_" aria-label="TikTok" className="hover:bg-pink-400">
               <FaTiktok />
             </a>
-            <a href="mailto:nailsbyanam@gmail.com" aria-label="Gmail" className="hover:text-pink-400">
+            <a href="mailto:nailsbyanam@gmail.com" aria-label="Gmail" className="hover:bg-pink-400">
               <SiGmail />
             </a>
           </div>
