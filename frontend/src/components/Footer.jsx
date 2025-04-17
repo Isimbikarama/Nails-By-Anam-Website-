@@ -1,4 +1,5 @@
 import React from "react";
+import { NavLink } from "react-router-dom";
 import { FaInstagram, FaTiktok } from "react-icons/fa";
 import { SiGmail } from "react-icons/si";
 import { assets } from "../assets/assets";  
@@ -12,29 +13,39 @@ const Footer = () => {
           <h2 className="text-2xl font-bold mb-4">Quick Links</h2>
           <ul className="space-y-2 text-lg">
             <li>
-              <a href="#" className="hover:underline">
+              <NavLink to="/about" className="hover:underline">
                 About
-              </a>
+              </NavLink>
             </li>
             <li>
-              <a href="#" className="hover:underline">
+              <NavLink to="/services" className="hover:underline">
                 Services
-              </a>
+              </NavLink>
             </li>
             <li>
-              <a href="#" className="hover:underline">
-                Look Book
-              </a>
+              <NavLink to="/pressons" className="hover:underline">
+                Press-Ons
+              </NavLink>
             </li>
             <li>
-              <a href="#" className="hover:underline">
+              <NavLink to="/CuticleOil" className="hover:underline">
+                Cuticle Oil
+              </NavLink>
+            </li>
+            <li>
+              <NavLink to="/booking" className="hover:underline">
                 Booking
-              </a>
+              </NavLink>
             </li>
             <li>
-              <a href="#" className="hover:underline">
-                Customer Reviews
-              </a>
+              <NavLink to="/lookbook" className="hover:underline">
+                Look Book
+              </NavLink>
+            </li>
+            <li>
+              <NavLink to="/contact" className="hover:underline">
+                Contact
+              </NavLink>
             </li>
           </ul>
         </div>
@@ -47,10 +58,10 @@ const Footer = () => {
             <a href="https://www.instagram.com/nailsbyanam_/" aria-label="Instagram" className="hover:bg-pink-400">
               <FaInstagram />
             </a>
-            <a href="https://www.tiktok.com/@nailsbyanam_" aria-label="TikTok" className="hover:bg-pink-400">
+            <a href="https://www.tiktok.com/@nailsbyanam_" aria-label="TikTok" >
               <FaTiktok />
             </a>
-            <a href="mailto:nailsbyanam@gmail.com" aria-label="Gmail" className="hover:bg-pink-400">
+            <a href="mailto:nailsbyanam@gmail.com" aria-label="Gmail" >
               <SiGmail />
             </a>
           </div>
