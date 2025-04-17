@@ -55,6 +55,8 @@
   [class*="text-pink-"] { color: rgb(111, 14, 53); }
   [class*="border-pink-"] { border-color: rgb(199, 34, 114); }
   [class*="border-rose-"] { border-color: rgb(199, 34, 114); }
+  [class*="ring-pink-"] { box-shadow: 0 0 0 2px rgb(251, 113, 133) !important; }
+  [class*="focus\\:ring-pink-"]:focus { box-shadow: 0 0 0 2px rgb(251, 113, 133) !important; }
 
   .footer-gradient {
     background: #A5495B !important; /* Solid fallback */

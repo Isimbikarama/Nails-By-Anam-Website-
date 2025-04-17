@@ -55,7 +55,7 @@ const Footer = () => {
           <p className="text-lg mb-2">Any Questions?</p>
           <h2 className="text-2xl font-bold mb-4">Contact</h2>
           <div className="flex justify-center gap-6 text-4xl">
-            <a href="https://www.instagram.com/nailsbyanam_/" aria-label="Instagram" className="hover:bg-pink-400">
+            <a href="https://www.instagram.com/nailsbyanam_/" aria-label="Instagram" >
               <FaInstagram />
             </a>
             <a href="https://www.tiktok.com/@nailsbyanam_" aria-label="TikTok" >
