@@ -14,7 +14,38 @@
   --rose-400: #FB7185;
 }
 
+/* Explicit color utilities */
+.bg-pink-50 { background-color: #FFF5F7 !important; background-color: var(--pink-50, #FFF5F7) !important; }
+.bg-pink-100 { background-color: #FFE4E6 !important; background-color: var(--pink-100, #FFE4E6) !important; }
+.bg-pink-200 { background-color: #FECDD3 !important; background-color: var(--pink-200, #FECDD3) !important; }
+.bg-pink-300 { background-color: #FDA4AF !important; background-color: var(--pink-300, #FDA4AF) !important; }
+.bg-pink-400 { background-color: #FB7185 !important; background-color: var(--pink-400, #FB7185) !important; }
+.bg-pink-500 { background-color: #F43F5E !important; background-color: var(--pink-500, #F43F5E) !important; }
 
+.bg-rose-50 { background-color: #FFF1F2 !important; background-color: var(--rose-50, #FFF1F2) !important; }
+.bg-rose-100 { background-color: #FFE4E6 !important; background-color: var(--rose-100, #FFE4E6) !important; }
+.bg-rose-200 { background-color: #FECDD3 !important; background-color: var(--rose-200, #FECDD3) !important; }
+.bg-rose-300 { background-color: #FDA4AF !important; background-color: var(--rose-300, #FDA4AF) !important; }
+.bg-rose-400 { background-color: #FB7185 !important; background-color: var(--rose-400, #FB7185) !important; }
+
+.text-pink-400 { color: #FB7185 !important; color: var(--pink-400, #FB7185) !important; }
+.text-pink-500 { color: #F43F5E !important; color: var(--pink-500, #F43F5E) !important; }
+.text-pink-600 { color: #E11D48 !important; color: var(--pink-600, #E11D48) !important; }
+.text-pink-700 { color: #BE123C !important; color: var(--pink-700, #BE123C) !important; }
+.text-pink-800 { color: #9F1239 !important; color: var(--pink-800, #9F1239) !important; }
+
+.border-pink-300 { border-color: #FDA4AF !important; border-color: var(--pink-300, #FDA4AF) !important; }
+.border-pink-400 { border-color: #FB7185 !important; border-color: var(--pink-400, #FB7185) !important; }
+.border-rose-300 { border-color: #FDA4AF !important; border-color: var(--rose-300, #FDA4AF) !important; }
+
+/* iOS specific fallbacks */
+@supports (-webkit-touch-callout: none) {
+  [class*="bg-pink-"] { background-color: rgb(255, 245, 247); }
+  [class*="bg-rose-"] { background-color: mistyrose; }
+  [class*="text-pink-"] { color: rgb(111, 14, 53); }
+  [class*="border-pink-"] { border-color: rgb(199, 34, 114); }
+  [class*="border-rose-"] { border-color: rgb(199, 34, 114); }
+}
 
 /* Font fallbacks */
 @font-face {
