@@ -5,8 +5,8 @@ import ReferralPromotion from './ReferalPromotion';
 
 const promos = [
   { id: 1, component: <WaterlooPromo />, bgClass: "bg-rose-50" },
-  { id: 2, component: <BirthdayPromo />, bgClass: "bg-pink-500" },
-  { id: 3, component: <ReferralPromotion />, bgClass: "bg-pink-100" },
+  { id: 2, component: <BirthdayPromo />, bgClass: "bg-pink-400" },
+  { id: 3, component: <ReferralPromotion />, bgClass: "bg-rose-100" },
 ];
 
 const CardWrapper = ({ children, bgClass }) => (

@@ -9,15 +9,10 @@ export default defineConfig({
     react(),
     legacy({
       targets: [
-        'defaults',
-        'not IE 11',
-        'iOS >= 10',
-        'Android >= 4.4',
-        'last 2 versions'
+        '> 0.2%, not dead',
+        'IE 11',
       ],
-      polyfills: true,
       additionalLegacyPolyfills: ['regenerator-runtime/runtime'],
-      modernPolyfills: true
     }),
   ],
   css: {
@@ -33,18 +28,34 @@ export default defineConfig({
               fontFamily: {
                 custom: ['BebasNeue-Regular', 'PTSerif-Regular', 'Twister'],
               },
+              colors: {
+                pink: {
+                  50: '#FFF5F7',
+                  100: '#FFE4E6',
+                  200: '#FECDD3',
+                  300: '#FDA4AF',
+                  400: '#FB7185',
+                  500: '#F43F5E',
+                  600: '#E11D48',
+                  700: '#BE123C',
+                  800: '#9F1239'
+                },
+                rose: {
+                  50: '#FFF1F2',
+                  100: '#FFE4E6',
+                  200: '#FECDD3',
+                  300: '#FDA4AF',
+                  400: '#FB7185',
+                  500: '#F43F5E',
+                  600: '#E11D48',
+                  700: '#BE123C',
+                  800: '#9F1239'
+                }
+              }
             },
           },
         }),
-        autoprefixer({
-          overrideBrowserslist: [
-            '>0.2%',
-            'not dead',
-            'not op_mini all',
-            'iOS >= 10',
-            'Android >= 4.4'
-          ]
-        }),
+        autoprefixer,
       ],
     },
   },

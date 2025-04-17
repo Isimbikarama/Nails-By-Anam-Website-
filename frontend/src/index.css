@@ -1,5 +1,21 @@
 @import "tailwindcss";
 
+/* Critical color fallbacks */
+:root {
+  --pink-100: #FFE4E6;
+  --pink-200: #FECDD3;
+  --pink-300: #FDA4AF;
+  --pink-400: #FB7185;
+  --pink-500: #F43F5E;
+  --rose-50: #FFF1F2;
+  --rose-100: #FFE4E6;
+  --rose-200: #FECDD3;
+  --rose-300: #FDA4AF;
+  --rose-400: #FB7185;
+}
+
+
+
 /* Font fallbacks */
 @font-face {
     font-family: 'BebasNeue-Regular';
