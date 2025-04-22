@@ -50,12 +50,7 @@ const Promotions = () => {
 
   return (
     <div className="py-12 px-[5%]">
-      <h1
-        className="text-7xl text-black  text-center mb-10"
-        style={{ fontFamily: 'Twister' }}
-      >
-        Promotions
-      </h1>
+    
 
       {/* Desktop View */}
       <div className="hidden md:flex justify-center flex-wrap gap-6">

@@ -7,8 +7,31 @@
       content="width=device-width, initial-scale=1.0, maximum-scale=5.0, minimum-scale=1.0, viewport-fit=cover"
     />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>Nails By Anam</title>
-    <link rel="icon" type="image/png" href="/src/assets/Character_Logo.png" />
+    <title>Nails By Anam - Professional Nail Salon Services</title>
+    <meta
+      name="description"
+      content="Professional nail care services in Waterloo and Markham. Specializing in manicures, pedicures, nail art, and more. Book your appointment today!"
+    />
+    <meta
+      name="keywords"
+      content="nail salon, manicure, pedicure, nail art, nail care, Waterloo and Markham, beauty services"
+    />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://nailsbyanam.ca" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:title"
+      content="Nails By Anam - Professional Nail Salon Services"
+    />
+    <meta
+      property="og:description"
+      content="Professional nail care services in [Location]. Specializing in manicures, pedicures, nail art, and more."
+    />
+    <meta property="og:image" content="/src/assets/Character_Logo.png" />
+    <meta property="og:url" content="https://nailsbyanam.com" />
+
     <!-- Preload critical fonts -->
     <link
       rel="preload"
@@ -30,6 +53,34 @@
 
     <!-- Android/PWA status bar -->
     <meta name="theme-color" content="#FFAABE" />
+
+    <!-- Structured Data for Local Business -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "NailSalon",
+        "name": "Nails By Anam",
+        "image": "/src/assets/Character_Logo.png",
+        "description": "Professional nail care services in [Location]. Specializing in manicures, pedicures, nail art, and more.",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "[Street Address]",
+          "addressLocality": "[City]",
+          "addressRegion": "[State/Region]",
+          "postalCode": "[Postal Code]",
+          "addressCountry": "[Country]"
+        },
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": "[Latitude]",
+          "longitude": "[Longitude]"
+        },
+        "url": "https://nailsbyanam.com",
+        "telephone": "[Phone Number]",
+        "priceRange": "$$",
+        "openingHours": "[Opening Hours]"
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

@@ -5,6 +5,10 @@ import { SiGmail } from "react-icons/si";
 import { assets } from "../assets/assets";  
 
 const Footer = () => {
+  const handleNavClick = () => {
+    window.scrollTo(0, 0);
+  };
+
   return (
     <footer className="w-full footer-gradient text-white py-12" style={{ fontFamily: 'PTSerif-Regular' }}>
       <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-3 gap-12 items-center">
@@ -13,37 +17,37 @@ const Footer = () => {
           <h2 className="text-2xl font-bold mb-4">Quick Links</h2>
           <ul className="space-y-2 text-lg">
             <li>
-              <NavLink to="/about" className="hover:underline">
+              <NavLink to="/about" className="hover:underline" onClick={handleNavClick}>
                 About
               </NavLink>
             </li>
             <li>
-              <NavLink to="/services" className="hover:underline">
+              <NavLink to="/services" className="hover:underline" onClick={handleNavClick}>
                 Services
               </NavLink>
             </li>
             <li>
-              <NavLink to="/pressons" className="hover:underline">
+              <NavLink to="/pressons" className="hover:underline" onClick={handleNavClick}>
                 Press-Ons
               </NavLink>
             </li>
             <li>
-              <NavLink to="/CuticleOil" className="hover:underline">
+              <NavLink to="/CuticleOil" className="hover:underline" onClick={handleNavClick}>
                 Cuticle Oil
               </NavLink>
             </li>
             <li>
-              <NavLink to="/booking" className="hover:underline">
+              <NavLink to="/booking" className="hover:underline" onClick={handleNavClick}>
                 Booking
               </NavLink>
             </li>
             <li>
-              <NavLink to="/lookbook" className="hover:underline">
+              <NavLink to="/lookbook" className="hover:underline" onClick={handleNavClick}>
                 Look Book
               </NavLink>
             </li>
             <li>
-              <NavLink to="/contact" className="hover:underline">
+              <NavLink to="/contact" className="hover:underline" onClick={handleNavClick}>
                 Contact
               </NavLink>
             </li>

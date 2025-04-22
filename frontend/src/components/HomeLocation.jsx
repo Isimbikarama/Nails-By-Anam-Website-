@@ -1,4 +1,5 @@
 import React from 'react';
+import { assets } from '../assets/assets';
 
 const HomeLocation = () => {
   return (
@@ -17,9 +18,11 @@ const HomeLocation = () => {
       {/* Main Studio Image */}
       <div className="max-w-6xl mx-auto mb-16">
         <div className="aspect-w-16 aspect-h-9 rounded-2xl overflow-hidden shadow-xl">
-          <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-            <p className="text-2xl text-gray-500">Main Studio View</p>
-          </div>
+          <img
+            src=""
+            alt="Main Studio View"
+            className="w-full h-full object-cover"
+          />
         </div>
         <p className="text-center text-gray-600 mt-4 italic">Our bright, clean, and inviting workspace</p>
       </div>
@@ -31,8 +34,12 @@ const HomeLocation = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Feature 1 */}
           <div className="bg-white rounded-xl shadow-md overflow-hidden">
-            <div className="h-64 bg-gray-200 flex items-center justify-center">
-              <p className="text-xl text-gray-500">Nail Station</p>
+            <div className="h-64 overflow-hidden">
+              <img
+                src={assets.nail_studio_3}
+                alt="Premium Nail Station"
+                className="w-full h-full object-cover"
+              />
             </div>
             <div className="p-6">
               <h3 className="text-xl font-semibold text-gray-800 mb-2">Premium Nail Station</h3>
@@ -44,8 +51,12 @@ const HomeLocation = () => {
 
           {/* Feature 2 */}
           <div className="bg-white rounded-xl shadow-md overflow-hidden">
-            <div className="h-64 bg-gray-200 flex items-center justify-center">
-              <p className="text-xl text-gray-500">Product Display</p>
+            <div className="h-64 overflow-hidden">
+              <img
+                src={assets.nail_studio_3}
+                alt="Curated Polish Collection"
+                className="w-full h-full object-cover"
+              />
             </div>
             <div className="p-6">
               <h3 className="text-xl font-semibold text-gray-800 mb-2">Curated Polish Collection</h3>
@@ -57,8 +68,12 @@ const HomeLocation = () => {
 
           {/* Feature 3 */}
           <div className="bg-white rounded-xl shadow-md overflow-hidden">
-            <div className="h-64 bg-gray-200 flex items-center justify-center">
-              <p className="text-xl text-gray-500">Relaxation Corner</p>
+            <div className="h-64 overflow-hidden">
+              <img
+                src={assets.nail_studio_3}
+                alt="Comfort Zone"
+                className="w-full h-full object-cover"
+              />
             </div>
             <div className="p-6">
               <h3 className="text-xl font-semibold text-gray-800 mb-2">Comfort Zone</h3>
@@ -77,8 +92,12 @@ const HomeLocation = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Before */}
           <div className="bg-white rounded-xl shadow-md overflow-hidden">
-            <div className="h-80 bg-gray-200 flex items-center justify-center">
-              <p className="text-xl text-gray-500">Before</p>
+            <div className="h-80 overflow-hidden">
+              <img
+               src={assets.nail_studio_3}
+                alt="Before Treatment"
+                className="w-full h-full object-cover"
+              />
             </div>
             <div className="p-4 text-center">
               <p className="text-gray-600 italic">Before your appointment</p>
@@ -87,8 +106,12 @@ const HomeLocation = () => {
 
           {/* After */}
           <div className="bg-white rounded-xl shadow-md overflow-hidden">
-            <div className="h-80 bg-gray-200 flex items-center justify-center">
-              <p className="text-xl text-gray-500">After</p>
+            <div className="h-80 overflow-hidden">
+              <img
+               src={assets.nail_studio_3}
+                alt="After Treatment"
+                className="w-full h-full object-cover"
+              />
             </div>
             <div className="p-4 text-center">
               <p className="text-gray-600 italic">After our signature service</p>
@@ -102,9 +125,11 @@ const HomeLocation = () => {
         <div className="bg-white rounded-xl shadow-lg overflow-hidden">
           <div className="flex flex-col md:flex-row">
             <div className="w-full md:w-1/2">
-              <div className="h-64 md:h-full bg-gray-200 flex items-center justify-center">
-                <p className="text-xl text-gray-500">Map Location</p>
-              </div>
+              <img
+                src={assets.nail_studio_3}
+                alt="Studio Location Map"
+                className="w-full h-full object-cover"
+              />
             </div>
             <div className="w-full md:w-1/2 p-8">
               <h3 className="text-2xl font-semibold text-gray-800 mb-4">Find Our Studio</h3>

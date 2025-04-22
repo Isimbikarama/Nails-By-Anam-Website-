@@ -1,5 +1,24 @@
 import React, { useState, useRef, useEffect } from 'react';
 
+const services = {
+  manicures: [
+    { id: 1, name: 'Basic Manicure', price: 20, duration: 30 },
+    { id: 2, name: 'Gel Manicure', price: 35, duration: 45 },
+    { id: 3, name: 'French Manicure', price: 40, duration: 50 },
+    { id: 4, name: 'Luxury Spa Manicure', price: 50, duration: 60 }
+  ],
+  acrylicGelX: [
+    { id: 5, name: 'Acrylic Full Set', price: 55, duration: 75 },
+    { id: 6, name: 'Acrylic Fill', price: 40, duration: 50 },
+    { id: 7, name: 'Gel-X Full Set', price: 65, duration: 75 },
+    { id: 8, name: 'Gel-X Fill', price: 55, duration: 60 }
+  ],
+  addOns: [
+    { id: 9, name: 'Paraffin Wax Treatment', price: 10, duration: 15 },
+    { id: 10, name: 'Soak-Off Removal', price: 15, duration: 15 }
+  ]
+};
+
 const Booking = () => {
   const fileInputRef = useRef(null);
   const sizingPhotoRef = useRef(null);
@@ -65,6 +84,10 @@ const Booking = () => {
   const [minDate, setMinDate] = useState('');
   const [minTime, setMinTime] = useState('');
 
+  // State for available time slots
+  const [availableTimeSlots, setAvailableTimeSlots] = useState([]);
+  const [totalDuration, setTotalDuration] = useState(0);
+
   // Set minimum date and time on component mount
   useEffect(() => {
     const today = new Date();
@@ -113,6 +136,36 @@ const Booking = () => {
            today.getDate() === selectedDate.getDate();
   };
 
+  // Calculate total duration when services change
+  useEffect(() => {
+    if (formData.serviceType === 'nail-appointment' && selectedServices.length > 0) {
+      const duration = selectedServices.reduce((total, serviceId) => {
+        const service = [...services.manicures, ...services.acrylicGelX, ...services.addOns]
+          .find(s => s.id === serviceId);
+        return total + (service ? service.duration : 0);
+      }, 0);
+      setTotalDuration(duration);
+    }
+  }, [selectedServices]);
+
+  // Fetch available time slots when date or services change
+  useEffect(() => {
+    const fetchTimeSlots = async () => {
+      if (formData.date && formData.serviceType === 'nail-appointment' && totalDuration > 0) {
+        try {
+          const response = await fetch(
+            `http://localhost:5002/api/availability?date=${formData.date}&duration=${totalDuration}`
+          );
+          const slots = await response.json();
+          setAvailableTimeSlots(slots);
+        } catch (error) {
+          console.error('Failed to fetch time slots:', error);
+        }
+      }
+    };
+    fetchTimeSlots();
+  }, [formData.date, totalDuration]);
+
   // Locations
   const locations = [
     { id: 'waterloo', name: 'Waterloo' },
@@ -125,22 +178,11 @@ const Booking = () => {
     { id: 'press-ons', name: 'Press-ons' }
   ];
 
-  // Services list based on website
-  const services = [
-    { id: 1, name: 'Gel-X Extensions', price: 45 },
-    { id: 2, name: 'Natural Nail Manicure', price: 35 },
-    { id: 3, name: 'Acrylic Extensions', price: 40 },
-    { id: 4, name: 'Nail Art - Simple', price: 10 },
-    { id: 5, name: 'Nail Art - Complex', price: 20 },
-    { id: 6, name: 'Removal', price: 15 },
-    { id: 7, name: 'Gel Polish', price: 30 },
-    { id: 8, name: 'French Tips', price: 10 }
-  ];
-
   // Calculate total price
   const calculateTotal = () => {
     return selectedServices.reduce((total, serviceId) => {
-      const service = services.find(s => s.id === serviceId);
+      const service = [...services.manicures, ...services.acrylicGelX, ...services.addOns]
+        .find(s => s.id === serviceId);
       return total + (service ? service.price : 0);
     }, 0);
   };
@@ -156,7 +198,6 @@ const Booking = () => {
 
   // Validate phone number (North American format with flexibility)
   const validatePhone = (phone) => {
-    // Allow formats like: (123) 456-7890, 123-456-7890, 123.456.7890, 1234567890
     const phoneRegex = /^(\+\d{1,2}\s?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/;
     if (!phoneRegex.test(phone)) {
       return "Please enter a valid phone number";
@@ -186,7 +227,6 @@ const Booking = () => {
     const selectedDate = new Date(date);
     const today = new Date();
     
-    // Only validate time if date is today
     if (selectedDate.getDate() === today.getDate() &&
         selectedDate.getMonth() === today.getMonth() &&
         selectedDate.getFullYear() === today.getFullYear()) {
@@ -212,7 +252,6 @@ const Booking = () => {
       [name]: newValue
     }));
     
-    // Validate fields
     let error = "";
     switch (name) {
       case 'email':
@@ -226,9 +265,7 @@ const Booking = () => {
       case 'date':
         error = validateDate(value);
         setValidationErrors(prev => ({ ...prev, date: error }));
-        // Update min time when date changes
         updateMinTime(value);
-        // Also validate time if it exists
         if (formData.time) {
           const timeError = validateTime(formData.time, value);
           setValidationErrors(prev => ({ ...prev, time: timeError }));
@@ -256,10 +293,8 @@ const Booking = () => {
   const formatPhoneNumber = (value) => {
     if (!value) return value;
     
-    // Remove all non-digit characters
     const phoneNumber = value.replace(/[^\d]/g, '');
     
-    // Format based on length
     if (phoneNumber.length < 4) return phoneNumber;
     if (phoneNumber.length < 7) {
       return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3)}`;
@@ -271,7 +306,6 @@ const Booking = () => {
   const handlePhoneInput = (e) => {
     const formattedPhone = formatPhoneNumber(e.target.value);
     
-    // Only update if we successfully formatted the number or it's empty
     if (formattedPhone || e.target.value === '') {
       setFormData(prevData => ({
         ...prevData,
@@ -299,7 +333,7 @@ const Booking = () => {
     setFormData(prevData => ({
       ...prevData,
       serviceType: typeId,
-      previouslySized: false // Reset sizing status when changing service type
+      previouslySized: false
     }));
   };
 
@@ -339,7 +373,6 @@ const Booking = () => {
         [isSizingPhoto ? 'sizingPhoto' : 'inspirationPhoto']: file
       }));
       
-      // Create preview URL
       const reader = new FileReader();
       reader.onloadend = () => {
         isSizingPhoto 
@@ -367,20 +400,23 @@ const Booking = () => {
     const errors = {
       email: validateEmail(formData.email),
       phone: validatePhone(formData.phone),
-      date: validateDate(formData.date),
-      time: validateTime(formData.time, formData.date)
+      date: formData.serviceType === 'nail-appointment' ? validateDate(formData.date) : '',
+      time: formData.serviceType === 'nail-appointment' ? validateTime(formData.time, formData.date) : ''
     };
     
     setValidationErrors(errors);
     
-    // Return true if no errors
-    return !Object.values(errors).some(error => error !== "");
+    // Only check date/time errors for nail appointments
+    const fieldsToValidate = formData.serviceType === 'nail-appointment' 
+      ? Object.values(errors)
+      : [errors.email, errors.phone];
+    
+    return !fieldsToValidate.some(error => error !== "");
   };
 
   // Check if nail sizes are required and if they've been provided
   const validateNailSizes = () => {
     if (formData.serviceType === 'press-ons' && !formData.previouslySized) {
-      // Check if all nail sizes are filled
       return !Object.values(nailSizes).some(size => size === '');
     }
     return true;
@@ -390,20 +426,25 @@ const Booking = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Validate form fields
     if (!validateForm()) {
       setSubmitError('Please correct the errors in the form');
-      return;
-    }
-    
-    if (formData.serviceType !== 'press-ons' && selectedServices.length === 0) {
-      setSubmitError('Please select at least one service');
       return;
     }
     
     if (!formData.serviceType) {
       setSubmitError('Please select a service type');
       return;
+    }
+
+    if (formData.serviceType === 'nail-appointment') {
+      if (selectedServices.length === 0) {
+        setSubmitError('Please select at least one service');
+        return;
+      }
+      if (!formData.date || !formData.time) {
+        setSubmitError('Please select a date and time for your appointment');
+        return;
+      }
     }
     
     if (formData.serviceType === 'press-ons' && !formData.previouslySized && !validateNailSizes()) {
@@ -427,26 +468,27 @@ const Booking = () => {
     setSubmitError('');
     
     try {
-      // Find the selected service object
-      const selectedService = services.find(s => s.id === selectedServices[0]);
-      
       const submitData = new FormData();
       submitData.append('name', formData.name);
       submitData.append('email', formData.email);
       submitData.append('phone', formData.phone);
       submitData.append('location', formData.location);
-      submitData.append('date', formData.date);
-      submitData.append('time', formData.time);
-      submitData.append('notes', formData.notes || '');
-      submitData.append('serviceName', selectedService.name);
       submitData.append('serviceType', formData.serviceType);
+      submitData.append('notes', formData.notes || '');
       submitData.append('acceptedTerms', formData.acceptedTerms);
       
+      // Only append date/time for nail appointments
+      if (formData.serviceType === 'nail-appointment') {
+        submitData.append('date', formData.date);
+        submitData.append('time', formData.time);
+      }
+      
       if (formData.serviceType === 'press-ons') {
+        submitData.append('serviceName', 'Press-on Nails');
+        submitData.append('duration', '60'); // Default duration for press-ons
         submitData.append('previouslySized', formData.previouslySized);
         
         if (!formData.previouslySized) {
-          // Add nail sizes to form data
           Object.entries(nailSizes).forEach(([finger, size]) => {
             submitData.append(finger, size);
           });
@@ -455,6 +497,13 @@ const Booking = () => {
             submitData.append('sizingPhoto', formData.sizingPhoto);
           }
         }
+      } else if (formData.serviceType === 'nail-appointment' && selectedServices.length > 0) {
+        const selectedServiceNames = selectedServices.map(serviceId => {
+          const service = [...services.manicures, ...services.acrylicGelX, ...services.addOns]
+            .find(s => s.id === serviceId);
+          return service.name;
+        });
+        submitData.append('serviceName', selectedServiceNames.join(', '));
       }
       
       if (formData.inspirationPhoto) {
@@ -477,7 +526,6 @@ const Booking = () => {
       console.log('Booking created:', result);
       setSubmitSuccess(true);
       
-      // Reset form
       setFormData({
         name: '',
         email: '',
@@ -517,7 +565,6 @@ const Booking = () => {
 
   return (
     <div className="">
-     
       <div className="max-w-4xl mx-auto p-6">
         {submitSuccess ? (
           <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-6">
@@ -526,8 +573,6 @@ const Booking = () => {
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="bg-pink-50 p-6 rounded-lg shadow-md">
-            
-            
             {submitError && (
               <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6">
                 {submitError}
@@ -603,47 +648,8 @@ const Booking = () => {
                   ))}
                 </select>
               </div>
-              
-              <div>
-                <label htmlFor="date" className="block text-pink-700 mb-2">Date*</label>
-                <input
-                  type="date"
-                  id="date"
-                  name="date"
-                  value={formData.date}
-                  onChange={handleChange}
-                  min={minDate}
-                  required
-                  className={`w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-pink-400 ${
-                    validationErrors.date ? 'border-red-500' : 'border-pink-300'
-                  }`}
-                />
-                {validationErrors.date && (
-                  <p className="text-red-500 text-sm mt-1">{validationErrors.date}</p>
-                )}
-              </div>
-              
-              <div>
-                <label htmlFor="time" className="block text-pink-700 mb-2">Time*</label>
-                <input
-                  type="time"
-                  id="time"
-                  name="time"
-                  value={formData.time}
-                  onChange={handleChange}
-                  min={isDateToday(formData.date) ? minTime : undefined}
-                  required
-                  className={`w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-pink-400 ${
-                    validationErrors.time ? 'border-red-500' : 'border-pink-300'
-                  }`}
-                />
-                {validationErrors.time && (
-                  <p className="text-red-500 text-sm mt-1">{validationErrors.time}</p>
-                )}
-              </div>
             </div>
             
-            {/* Service Type Selection */}
             <div className="mt-8">
               <label className="block text-pink-700 mb-2">Service Type*</label>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -663,7 +669,6 @@ const Booking = () => {
               </div>
             </div>
             
-            {/* Press-ons specific fields */}
             {formData.serviceType === 'press-ons' && (
               <div className="mt-6 p-4 bg-white rounded-lg border border-pink-300">
                 <h3 className="font-semibold text-pink-800 mb-3">Press-ons Details</h3>
@@ -802,9 +807,7 @@ const Booking = () => {
                                 type="number"
                                 name="rightIndex"
                                 value={nailSizes.rightIndex}
-                               
-
-                                  onChange={handleNailSizeChange}
+                                onChange={handleNailSizeChange}
                                 min="1"
                                 max="12"
                                 step="1"
@@ -859,7 +862,6 @@ const Booking = () => {
                       </div>
                     </div>
                     
-                    {/* Nail sizing photo upload */}
                     <div className="mt-4">
                       <label className="block text-pink-700 mb-2">
                         Please take a picture of your left and right hand next to a quarter and upload*
@@ -920,53 +922,111 @@ const Booking = () => {
                     </div>
                   </>
                 )}
+                
+                <div className="mt-4">
+                  <p className="text-gray-600 italic mb-2">
+                    Note: For press-on orders, we'll contact you to arrange a suitable delivery/pickup time.
+                  </p>
+                </div>
               </div>
             )}
             
-            {/* Services section - should only show when service type is NOT press-ons */}
-{formData.serviceType !== 'press-ons' && (
-  <div className="mt-8">
-    <label className="block text-pink-700 mb-2">Services*</label>
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-      {services.map(service => (
-        <div 
-          key={service.id} 
-          className={`border p-3 rounded cursor-pointer transition-colors ${
-            selectedServices.includes(service.id) 
-              ? 'bg-pink-200 border-pink-400' 
-              : 'bg-white border-pink-200 hover:border-pink-300'
-          }`}
-          onClick={() => handleServiceSelection(service.id)}
-        >
-          <div className="flex justify-between items-center">
-            <span>{service.name}</span>
-            <span className="font-semibold">${service.price}</span>
-          </div>
-        </div>
-      ))}
-    </div>
-    {selectedServices.length > 0 && (
-      <div className="mt-4 p-4 bg-white rounded-lg border border-pink-300">
-        <h3 className="font-semibold text-pink-800 mb-2">Selected Services:</h3>
-        <ul className="mb-4">
-          {selectedServices.map(serviceId => {
-            const service = services.find(s => s.id === serviceId);
-            return (
-              <li key={serviceId} className="flex justify-between">
-                <span>{service.name}</span>
-                <span>${service.price}</span>
-              </li>
-            );
-          })}
-        </ul>
-        <div className="border-t border-pink-200 pt-2 flex justify-between font-bold text-lg">
-          <span>Total:</span>
-          <span>${calculateTotal()}</span>
-        </div>
-      </div>
-    )}
-  </div>
-)}
+            {formData.serviceType !== 'press-ons' && (
+              <div className="mt-8">
+                <label className="block text-pink-700 mb-2">Services*</label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {[...services.manicures, ...services.acrylicGelX, ...services.addOns].map(service => (
+                    <div 
+                      key={service.id} 
+                      className={`border p-3 rounded cursor-pointer transition-colors ${
+                        selectedServices.includes(service.id) 
+                          ? 'bg-pink-200 border-pink-400' 
+                          : 'bg-white border-pink-200 hover:border-pink-300'
+                      }`}
+                      onClick={() => handleServiceSelection(service.id)}
+                    >
+                      <div className="flex justify-between items-center">
+                        <span>{service.name}</span>
+                        <span className="font-semibold">${service.price}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                {selectedServices.length > 0 && (
+                  <div className="mt-4 p-4 bg-white rounded-lg border border-pink-300">
+                    <h3 className="font-semibold text-pink-800 mb-2">Selected Services:</h3>
+                    <ul className="mb-4">
+                      {selectedServices.map(serviceId => {
+                        const service = [...services.manicures, ...services.acrylicGelX, ...services.addOns]
+                          .find(s => s.id === serviceId);
+                        return (
+                          <li key={serviceId} className="flex justify-between">
+                            <span>{service.name}</span>
+                            <span>${service.price}</span>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                    <div className="border-t border-pink-200 pt-2 flex justify-between font-bold text-lg">
+                      <span>Estimated Total:</span>
+                      <span>${calculateTotal()}</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+            
+            {formData.serviceType === 'nail-appointment' && selectedServices.length > 0 && (
+              <div className="mt-6">
+                <h3 className="font-semibold text-pink-800 mb-4">
+                  Appointment Details (Total Duration: {totalDuration} minutes)
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label htmlFor="date" className="block text-pink-700 mb-2">Select Date*</label>
+                    <input
+                      type="date"
+                      id="date"
+                      name="date"
+                      value={formData.date}
+                      onChange={handleChange}
+                      min={minDate}
+                      required
+                      className={`w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-pink-400 ${
+                        validationErrors.date ? 'border-red-500' : 'border-pink-300'
+                      }`}
+                    />
+                    {validationErrors.date && (
+                      <p className="text-red-500 text-sm mt-1">{validationErrors.date}</p>
+                    )}
+                  </div>
+                  
+                  {formData.date && availableTimeSlots.length > 0 && (
+                    <div>
+                      <label htmlFor="time" className="block text-pink-700 mb-2">Select Time*</label>
+                      <select
+                        id="time"
+                        name="time"
+                        value={formData.time}
+                        onChange={handleChange}
+                        required
+                        className="w-full p-3 border border-pink-300 rounded focus:outline-none focus:ring-2 focus:ring-pink-400"
+                      >
+                        <option value="">Choose a time slot</option>
+                        {availableTimeSlots.map(slot => (
+                          <option key={slot.time} value={slot.time}>
+                            {slot.time}
+                          </option>
+                        ))}
+                      </select>
+                      {validationErrors.time && (
+                        <p className="text-red-500 text-sm mt-1">{validationErrors.time}</p>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
             
             <div className="mt-8">
               <label className="block text-pink-700 mb-2">Inspiration Photo (Optional)</label>
@@ -1038,7 +1098,6 @@ const Booking = () => {
               ></textarea>
             </div>
             
-            {/* Terms and Conditions Section */}
             <div className="mt-8">
               <div className="border border-pink-300 rounded-lg bg-white overflow-hidden">
                 <div 

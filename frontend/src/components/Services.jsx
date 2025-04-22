@@ -69,10 +69,10 @@ const Services = () => {
         Services
       </h2>
 
-      <div className="relative overflow-hidden">
+      <div className="relative overflow-hidden flex justify-center">
         <div
           ref={carouselRef}
-          className="flex overflow-x-auto scroll-smooth snap-x snap-mandatory px-20 py-3 hide-scrollbar"
+          className="flex overflow-x-auto scroll-smooth snap-x snap-mandatory px-20 md:px-5 py-3 hide-scrollbar max-w-[1200px] mx-auto"
           style={{ scrollBehavior: 'smooth' }}
         >
           {services.map((service, index) => (
@@ -88,7 +88,8 @@ const Services = () => {
                 />
                 <div className="p-6">
                   <h3 className="text-xl font-semibold mb-2">{service.title}</h3>
-                  <p className="text-gray-600">{service.description}</p>
+                  <p className="text-gray-600 mb-4">{service.description}</p>
+                  <p className=" font-bold text-xl">{service.price}</p>
                 </div>
               </div>
             </div>
