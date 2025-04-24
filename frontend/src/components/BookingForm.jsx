@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { assets } from '../assets/assets';
 
 const services = {
   manicures: [
@@ -32,11 +33,12 @@ const Booking = () => {
     date: '',
     time: '',
     notes: '',
-    inspirationPhoto: null,
-    sizingPhoto: null,
+    inspirationPhotos: [],
+    sizingPhotos: [],
     acceptedTerms: false,
     serviceType: '',
-    previouslySized: false
+    previouslySized: false,
+    knowsMeasurements: null // Add this new state property
   });
 
   // State for nail sizes
@@ -69,8 +71,8 @@ const Booking = () => {
   const [sizingDragActive, setSizingDragActive] = useState(false);
   
   // State for preview images
-  const [previewUrl, setPreviewUrl] = useState(null);
-  const [sizingPreviewUrl, setSizingPreviewUrl] = useState(null);
+  const [previewUrls, setPreviewUrls] = useState([]);
+  const [sizingPreviewUrls, setSizingPreviewUrls] = useState([]);
   
   // State for submission status
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -333,7 +335,8 @@ const Booking = () => {
     setFormData(prevData => ({
       ...prevData,
       serviceType: typeId,
-      previouslySized: false
+      previouslySized: false,
+      knowsMeasurements: null
     }));
   };
 
@@ -353,35 +356,30 @@ const Booking = () => {
     e.preventDefault();
     e.stopPropagation();
     isSizingPhoto ? setSizingDragActive(false) : setDragActive(false);
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      handleFiles(e.dataTransfer.files[0], isSizingPhoto);
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      handleFilesChange({ target: { files: e.dataTransfer.files } }, isSizingPhoto);
     }
   };
 
   // Handle file input change
-  const handleFileChange = (e, isSizingPhoto = false) => {
-    if (e.target.files && e.target.files[0]) {
-      handleFiles(e.target.files[0], isSizingPhoto);
-    }
-  };
-
-  // Process file
-  const handleFiles = (file, isSizingPhoto = false) => {
-    if (file.type.startsWith('image/')) {
-      setFormData(prevData => ({
-        ...prevData,
-        [isSizingPhoto ? 'sizingPhoto' : 'inspirationPhoto']: file
-      }));
-      
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        isSizingPhoto 
-          ? setSizingPreviewUrl(reader.result)
-          : setPreviewUrl(reader.result);
-      };
-      reader.readAsDataURL(file);
-    } else {
-      alert('Please upload an image file');
+  const handleFilesChange = (e, isSizingPhoto = false) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const filesArray = Array.from(e.target.files).slice(0, 4);
+      if (isSizingPhoto) {
+        setFormData(prev => ({ ...prev, sizingPhotos: filesArray }));
+        Promise.all(filesArray.map(file => new Promise(resolve => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result);
+          reader.readAsDataURL(file);
+        }))).then(urls => setSizingPreviewUrls(urls));
+      } else {
+        setFormData(prev => ({ ...prev, inspirationPhotos: filesArray }));
+        Promise.all(filesArray.map(file => new Promise(resolve => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result);
+          reader.readAsDataURL(file);
+        }))).then(urls => setPreviewUrls(urls));
+      }
     }
   };
 
@@ -416,7 +414,7 @@ const Booking = () => {
 
   // Check if nail sizes are required and if they've been provided
   const validateNailSizes = () => {
-    if (formData.serviceType === 'press-ons' && !formData.previouslySized) {
+    if (formData.serviceType === 'press-ons' && formData.knowsMeasurements) {
       return !Object.values(nailSizes).some(size => size === '');
     }
     return true;
@@ -447,14 +445,19 @@ const Booking = () => {
       }
     }
     
-    if (formData.serviceType === 'press-ons' && !formData.previouslySized && !validateNailSizes()) {
-      setSubmitError('Please provide all nail sizes');
-      return;
-    }
-    
-    if (formData.serviceType === 'press-ons' && !formData.previouslySized && !formData.sizingPhoto) {
-      setSubmitError('Please upload a photo of your hands for sizing');
-      return;
+    if (formData.serviceType === 'press-ons') {
+      if (formData.knowsMeasurements === null) {
+        setSubmitError('Please indicate if you know your nail measurements');
+        return;
+      }
+      if (formData.knowsMeasurements && !validateNailSizes()) {
+        setSubmitError('Please provide all nail sizes');
+        return;
+      }
+      if (!formData.knowsMeasurements && formData.sizingPhotos.length === 0) {
+        setSubmitError('Please upload photos of your hands for sizing');
+        return;
+      }
     }
     
     if (!formData.acceptedTerms) {
@@ -486,15 +489,17 @@ const Booking = () => {
       if (formData.serviceType === 'press-ons') {
         submitData.append('serviceName', 'Press-on Nails');
         submitData.append('duration', '60'); // Default duration for press-ons
-        submitData.append('previouslySized', formData.previouslySized);
+        submitData.append('knowsMeasurements', formData.knowsMeasurements);
         
-        if (!formData.previouslySized) {
+        if (formData.knowsMeasurements) {
           Object.entries(nailSizes).forEach(([finger, size]) => {
             submitData.append(finger, size);
           });
-          
-          if (formData.sizingPhoto) {
-            submitData.append('sizingPhoto', formData.sizingPhoto);
+        } else {
+          if (formData.sizingPhotos.length > 0) {
+            formData.sizingPhotos.forEach((file, index) => {
+              submitData.append(`sizingPhoto_${index}`, file);
+            });
           }
         }
       } else if (formData.serviceType === 'nail-appointment' && selectedServices.length > 0) {
@@ -506,8 +511,10 @@ const Booking = () => {
         submitData.append('serviceName', selectedServiceNames.join(', '));
       }
       
-      if (formData.inspirationPhoto) {
-        submitData.append('inspirationPhoto', formData.inspirationPhoto);
+      if (formData.inspirationPhotos.length > 0) {
+        formData.inspirationPhotos.forEach((file, index) => {
+          submitData.append(`inspirationPhoto_${index}`, file);
+        });
       }
 
       console.log('Submitting booking:', Object.fromEntries(submitData.entries()));
@@ -534,15 +541,16 @@ const Booking = () => {
         date: '',
         time: '',
         notes: '',
-        inspirationPhoto: null,
-        sizingPhoto: null,
+        inspirationPhotos: [],
+        sizingPhotos: [],
         acceptedTerms: false,
         serviceType: '',
-        previouslySized: false
+        previouslySized: false,
+        knowsMeasurements: null
       });
       setSelectedServices([]);
-      setPreviewUrl(null);
-      setSizingPreviewUrl(null);
+      setPreviewUrls([]);
+      setSizingPreviewUrls([]);
       setNailSizes({
         leftThumb: '',
         leftIndex: '',
@@ -674,14 +682,14 @@ const Booking = () => {
                 <h3 className="font-semibold text-pink-800 mb-3">Press-ons Details</h3>
                 
                 <div className="mb-4">
-                  <label className="block text-pink-700 mb-2">Have you been sized with us before?*</label>
+                  <label className="block text-pink-700 mb-2">Do you know your mm measurements of all nails?*</label>
                   <div className="flex space-x-4">
                     <label className="inline-flex items-center cursor-pointer">
                       <input
                         type="radio"
-                        name="previouslySized"
-                        checked={formData.previouslySized === true}
-                        onChange={() => setFormData(prev => ({ ...prev, previouslySized: true }))}
+                        name="knowsMeasurements"
+                        checked={formData.knowsMeasurements === true}
+                        onChange={() => setFormData(prev => ({ ...prev, knowsMeasurements: true }))}
                         className="form-radio h-5 w-5 text-pink-500"
                       />
                       <span className="ml-2">Yes</span>
@@ -689,239 +697,241 @@ const Booking = () => {
                     <label className="inline-flex items-center cursor-pointer">
                       <input
                         type="radio"
-                        name="previouslySized"
-                        checked={formData.previouslySized === false}
-                        onChange={() => setFormData(prev => ({ ...prev, previouslySized: false }))}
+                        name="knowsMeasurements"
+                        checked={formData.knowsMeasurements === false}
+                        onChange={() => setFormData(prev => ({ ...prev, knowsMeasurements: false }))}
                         className="form-radio h-5 w-5 text-pink-500"
                       />
                       <span className="ml-2">No</span>
                     </label>
                   </div>
                 </div>
-                
-                {formData.previouslySized ? (
-                  <div className="bg-pink-100 p-3 rounded-md text-pink-800">
-                    Great! We'll use your nail sizes on file for your press-ons order.
-                  </div>
-                ) : (
-                  <>
-                    <div className="mb-4">
-                      <h4 className="font-medium text-pink-700 mb-3">Please enter your nail sizes (mm)*</h4>
-                      <div className="grid grid-cols-2 gap-x-6 gap-y-3">
-                        <div>
-                          <h5 className="font-medium mb-2">Left Hand</h5>
-                          <div className="space-y-2">
-                            <div className="flex items-center">
-                              <label className="w-20">Thumb:</label>
-                              <input
-                                type="number"
-                                name="leftThumb"
-                                value={nailSizes.leftThumb}
-                                onChange={handleNailSizeChange}
-                                min="1"
-                                max="12"
-                                step="1"
-                                required
-                                className="w-16 p-2 border border-pink-300 rounded focus:outline-none focus:ring-2 focus:ring-pink-400"
-                              />
-                            </div>
-                            <div className="flex items-center">
-                              <label className="w-20">Index:</label>
-                              <input
-                                type="number"
-                                name="leftIndex"
-                                value={nailSizes.leftIndex}
-                                onChange={handleNailSizeChange}
-                                min="1"
-                                max="12"
-                                step="1"
-                                required
-                                className="w-16 p-2 border border-pink-300 rounded focus:outline-none focus:ring-2 focus:ring-pink-400"
-                              />
-                            </div>
-                            <div className="flex items-center">
-                              <label className="w-20">Middle:</label>
-                              <input
-                                type="number"
-                                name="leftMiddle"
-                                value={nailSizes.leftMiddle}
-                                onChange={handleNailSizeChange}
-                                min="1"
-                                max="12"
-                                step="1"
-                                required
-                                className="w-16 p-2 border border-pink-300 rounded focus:outline-none focus:ring-2 focus:ring-pink-400"
-                              />
-                            </div>
-                            <div className="flex items-center">
-                              <label className="w-20">Ring:</label>
-                              <input
-                                type="number"
-                                name="leftRing"
-                                value={nailSizes.leftRing}
-                                onChange={handleNailSizeChange}
-                                min="1"
-                                max="12"
-                                step="1"
-                                required
-                                className="w-16 p-2 border border-pink-300 rounded focus:outline-none focus:ring-2 focus:ring-pink-400"
-                              />
-                            </div>
-                            <div className="flex items-center">
-                              <label className="w-20">Pinky:</label>
-                              <input
-                                type="number"
-                                name="leftPinky"
-                                value={nailSizes.leftPinky}
-                                onChange={handleNailSizeChange}
-                                min="1"
-                                max="12"
-                                step="1"
-                                required
-                                className="w-16 p-2 border border-pink-300 rounded focus:outline-none focus:ring-2 focus:ring-pink-400"
-                              />
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <div>
-                          <h5 className="font-medium mb-2">Right Hand</h5>
-                          <div className="space-y-2">
-                            <div className="flex items-center">
-                              <label className="w-20">Thumb:</label>
-                              <input
-                                type="number"
-                                name="rightThumb"
-                                value={nailSizes.rightThumb}
-                                onChange={handleNailSizeChange}
-                                min="1"
-                                max="12"
-                                step="1"
-                                required
-                                className="w-16 p-2 border border-pink-300 rounded focus:outline-none focus:ring-2 focus:ring-pink-400"
-                              />
-                            </div>
-                            <div className="flex items-center">
-                              <label className="w-20">Index:</label>
-                              <input
-                                type="number"
-                                name="rightIndex"
-                                value={nailSizes.rightIndex}
-                                onChange={handleNailSizeChange}
-                                min="1"
-                                max="12"
-                                step="1"
-                                required
-                                className="w-16 p-2 border border-pink-300 rounded focus:outline-none focus:ring-2 focus:ring-pink-400"
-                              />
-                            </div>
-                            <div className="flex items-center">
-                              <label className="w-20">Middle:</label>
-                              <input
-                                type="number"
-                                name="rightMiddle"
-                                value={nailSizes.rightMiddle}
-                                onChange={handleNailSizeChange}
-                                min="1"
-                                max="12"
-                                step="1"
-                                required
-                                className="w-16 p-2 border border-pink-300 rounded focus:outline-none focus:ring-2 focus:ring-pink-400"
-                              />
-                            </div>
-                            <div className="flex items-center">
-                              <label className="w-20">Ring:</label>
-                              <input
-                                type="number"
-                                name="rightRing"
-                                value={nailSizes.rightRing}
-                                onChange={handleNailSizeChange}
-                                min="1"
-                                max="12"
-                                step="1"
-                                required
-                                className="w-16 p-2 border border-pink-300 rounded focus:outline-none focus:ring-2 focus:ring-pink-400"
-                              />
-                            </div>
-                            <div className="flex items-center">
-                              <label className="w-20">Pinky:</label>
-                              <input
-                                type="number"
-                                name="rightPinky"
-                                value={nailSizes.rightPinky}
-                                onChange={handleNailSizeChange}
-                                min="1"
-                                max="12"
-                                step="1"
-                                required
-                                className="w-16 p-2 border border-pink-300 rounded focus:outline-none focus:ring-2 focus:ring-pink-400"
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="mt-4">
-                      <label className="block text-pink-700 mb-2">
-                        Please take a picture of your left and right hand next to a quarter and upload*
-                      </label>
-                      <div 
-                        className={`border-2 border-dashed p-6 rounded-lg text-center ${
-                          sizingDragActive ? 'border-pink-500 bg-pink-50' : 'border-pink-300'
-                        } ${sizingPreviewUrl ? 'p-2' : 'p-6'}`}
-                        onDragEnter={(e) => handleDrag(e, true)}
-                        onDragOver={(e) => handleDrag(e, true)}
-                        onDragLeave={(e) => handleDrag(e, true)}
-                        onDrop={(e) => handleDrop(e, true)}
-                      >
-                        {sizingPreviewUrl ? (
-                          <div className="relative">
-                            <img 
-                              src={sizingPreviewUrl} 
-                              alt="Sizing Preview" 
-                              className="max-h-48 mx-auto rounded" 
-                            />
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setSizingPreviewUrl(null);
-                                setFormData(prev => ({ ...prev, sizingPhoto: null }));
-                              }}
-                              className="absolute top-2 right-2 bg-pink-500 text-white rounded-full p-1 hover:bg-pink-600"
-                            >
-                              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                              </svg>
-                            </button>
-                          </div>
-                        ) : (
-                          <>
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto text-pink-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
-                            <p className="text-pink-700 mb-2">Drag & drop your hand sizing photo here</p>
-                            <p className="text-pink-500 mb-4">or</p>
-                            <button
-                              type="button"
-                              onClick={() => onButtonClick(true)}
-                              className="bg-pink-500 hover:bg-pink-600 text-white font-medium py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-pink-400 focus:ring-opacity-50 transition duration-300"
-                            >
-                              Browse Files
-                            </button>
+
+                {formData.knowsMeasurements ? (
+                  <div className="mb-4">
+                    <h4 className="font-medium text-pink-700 mb-3">Please enter your nail sizes (mm)*</h4>
+                    <div className="grid grid-cols-2 gap-x-6 gap-y-3">
+                      <div>
+                        <h5 className="font-medium mb-2">Left Hand</h5>
+                        <div className="space-y-2">
+                          <div className="flex items-center">
+                            <label className="w-20">Thumb:</label>
                             <input
-                              ref={sizingPhotoRef}
-                              type="file"
-                              accept="image/*"
-                              onChange={(e) => handleFileChange(e, true)}
-                              className="hidden"
+                              type="number"
+                              name="leftThumb"
+                              value={nailSizes.leftThumb}
+                              onChange={handleNailSizeChange}
+                              min="1"
+                              max="12"
+                              step="1"
+                              required
+                              className="w-16 p-2 border border-pink-300 rounded focus:outline-none focus:ring-2 focus:ring-pink-400"
                             />
-                          </>
-                        )}
+                          </div>
+                          <div className="flex items-center">
+                            <label className="w-20">Index:</label>
+                            <input
+                              type="number"
+                              name="leftIndex"
+                              value={nailSizes.leftIndex}
+                              onChange={handleNailSizeChange}
+                              min="1"
+                              max="12"
+                              step="1"
+                              required
+                              className="w-16 p-2 border border-pink-300 rounded focus:outline-none focus:ring-2 focus:ring-pink-400"
+                            />
+                          </div>
+                          <div className="flex items-center">
+                            <label className="w-20">Middle:</label>
+                            <input
+                              type="number"
+                              name="leftMiddle"
+                              value={nailSizes.leftMiddle}
+                              onChange={handleNailSizeChange}
+                              min="1"
+                              max="12"
+                              step="1"
+                              required
+                              className="w-16 p-2 border border-pink-300 rounded focus:outline-none focus:ring-2 focus:ring-pink-400"
+                            />
+                          </div>
+                          <div className="flex items-center">
+                            <label className="w-20">Ring:</label>
+                            <input
+                              type="number"
+                              name="leftRing"
+                              value={nailSizes.leftRing}
+                              onChange={handleNailSizeChange}
+                              min="1"
+                              max="12"
+                              step="1"
+                              required
+                              className="w-16 p-2 border border-pink-300 rounded focus:outline-none focus:ring-2 focus:ring-pink-400"
+                            />
+                          </div>
+                          <div className="flex items-center">
+                            <label className="w-20">Pinky:</label>
+                            <input
+                              type="number"
+                              name="leftPinky"
+                              value={nailSizes.leftPinky}
+                              onChange={handleNailSizeChange}
+                              min="1"
+                              max="12"
+                              step="1"
+                              required
+                              className="w-16 p-2 border border-pink-300 rounded focus:outline-none focus:ring-2 focus:ring-pink-400"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <h5 className="font-medium mb-2">Right Hand</h5>
+                        <div className="space-y-2">
+                          <div className="flex items-center">
+                            <label className="w-20">Thumb:</label>
+                            <input
+                              type="number"
+                              name="rightThumb"
+                              value={nailSizes.rightThumb}
+                              onChange={handleNailSizeChange}
+                              min="1"
+                              max="12"
+                              step="1"
+                              required
+                              className="w-16 p-2 border border-pink-300 rounded focus:outline-none focus:ring-2 focus:ring-pink-400"
+                            />
+                          </div>
+                          <div className="flex items-center">
+                            <label className="w-20">Index:</label>
+                            <input
+                              type="number"
+                              name="rightIndex"
+                              value={nailSizes.rightIndex}
+                              onChange={handleNailSizeChange}
+                              min="1"
+                              max="12"
+                              step="1"
+                              required
+                              className="w-16 p-2 border border-pink-300 rounded focus:outline-none focus:ring-2 focus:ring-pink-400"
+                            />
+                          </div>
+                          <div className="flex items-center">
+                            <label className="w-20">Middle:</label>
+                            <input
+                              type="number"
+                              name="rightMiddle"
+                              value={nailSizes.rightMiddle}
+                              onChange={handleNailSizeChange}
+                              min="1"
+                              max="12"
+                              step="1"
+                              required
+                              className="w-16 p-2 border border-pink-300 rounded focus:outline-none focus:ring-2 focus:ring-pink-400"
+                            />
+                          </div>
+                          <div className="flex items-center">
+                            <label className="w-20">Ring:</label>
+                            <input
+                              type="number"
+                              name="rightRing"
+                              value={nailSizes.rightRing}
+                              onChange={handleNailSizeChange}
+                              min="1"
+                              max="12"
+                              step="1"
+                              required
+                              className="w-16 p-2 border border-pink-300 rounded focus:outline-none focus:ring-2 focus:ring-pink-400"
+                            />
+                          </div>
+                          <div className="flex items-center">
+                            <label className="w-20">Pinky:</label>
+                            <input
+                              type="number"
+                              name="rightPinky"
+                              value={nailSizes.rightPinky}
+                              onChange={handleNailSizeChange}
+                              min="1"
+                              max="12"
+                              step="1"
+                              required
+                              className="w-16 p-2 border border-pink-300 rounded focus:outline-none focus:ring-2 focus:ring-pink-400"
+                            />
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </>
-                )}
+                  </div>
+                ) : formData.knowsMeasurements === false ? (
+                  <div className="mt-4">
+                    <label className="block text-pink-700 mb-2">
+                      Please take pictures of your left and right hand next to a quarter and upload (max 4)*
+                    </label>
+                    <div 
+                      className={`border-2 border-dashed p-6 rounded-lg text-center ${
+                        sizingDragActive ? 'border-pink-500 bg-pink-50' : 'border-pink-300'
+                      }`}
+                      onDragEnter={(e) => handleDrag(e, true)}
+                      onDragOver={(e) => handleDrag(e, true)}
+                      onDragLeave={(e) => handleDrag(e, true)}
+                      onDrop={(e) => handleDrop(e, true)}
+                    >
+                      {sizingPreviewUrls.length > 0 ? (
+                        <div className="grid grid-cols-2 gap-4">
+                          {sizingPreviewUrls.map((url, index) => (
+                            <div key={index} className="relative">
+                              <img 
+                                src={url} 
+                                alt={`Sizing Preview ${index + 1}`} 
+                                className="max-h-48 mx-auto rounded" 
+                              />
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setSizingPreviewUrls(prev => prev.filter((_, i) => i !== index));
+                                  setFormData(prev => ({
+                                    ...prev,
+                                    sizingPhotos: prev.sizingPhotos.filter((_, i) => i !== index)
+                                  }));
+                                }}
+                                className="absolute top-2 right-2 bg-pink-500 text-white rounded-full p-1 hover:bg-pink-600"
+                              >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <>
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto text-pink-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
+                          <p className="text-pink-700 mb-2">Drag & drop your hand sizing photos here</p>
+                          <p className="text-pink-500 mb-4">or</p>
+                          <button
+                            type="button"
+                            onClick={() => onButtonClick(true)}
+                            className="bg-pink-500 hover:bg-pink-600 text-white font-medium py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-pink-400 focus:ring-opacity-50 transition duration-300"
+                          >
+                            Browse Files
+                          </button>
+                          <input
+                            ref={sizingPhotoRef}
+                            type="file"
+                            accept="image/*"
+                            multiple
+                            onChange={(e) => handleFilesChange(e, true)}
+                            className="hidden"
+                          />
+                        </>
+                      )}
+                    </div>
+                  </div>
+                ) : null}
                 
                 <div className="mt-4">
                   <p className="text-gray-600 italic mb-2">
@@ -1029,59 +1039,71 @@ const Booking = () => {
             )}
             
             <div className="mt-8">
-              <label className="block text-pink-700 mb-2">Inspiration Photo (Optional)</label>
-              <div 
-                className={`border-2 border-dashed p-6 rounded-lg text-center ${
-                  dragActive ? 'border-pink-500 bg-pink-50' : 'border-pink-300'
-                } ${previewUrl ? 'p-2' : 'p-6'}`}
-                onDragEnter={handleDrag}
-                onDragOver={handleDrag}
-                onDragLeave={handleDrag}
-                onDrop={handleDrop}
-              >
-                {previewUrl ? (
-                  <div className="relative">
-                    <img 
-                      src={previewUrl} 
-                      alt="Preview" 
-                      className="max-h-48 mx-auto rounded" 
-                    />
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setPreviewUrl(null);
-                        setFormData(prev => ({ ...prev, inspirationPhoto: null }));
-                      }}
-                      className="absolute top-2 right-2 bg-pink-500 text-white rounded-full p-1 hover:bg-pink-600"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <label className="block text-pink-700 mb-2">Inspiration Photos (Optional, max 4)</label>
+              <div className="flex flex-col gap-4">
+                <div 
+                  className={`border-2 border-dashed p-6 rounded-lg text-center ${
+                    dragActive ? 'border-pink-500 bg-pink-50' : 'border-pink-300'
+                  }`}
+                  onDragEnter={handleDrag}
+                  onDragOver={handleDrag}
+                  onDragLeave={handleDrag}
+                  onDrop={handleDrop}
+                >
+                  {previewUrls.length > 0 ? (
+                    <div className="grid grid-cols-2 gap-4">
+                      {previewUrls.map((url, index) => (
+                        <div key={index} className="relative">
+                          <img 
+                            src={url} 
+                            alt={`Preview ${index + 1}`} 
+                            className="max-h-48 mx-auto rounded" 
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setPreviewUrls(prev => prev.filter((_, i) => i !== index));
+                              setFormData(prev => ({
+                                ...prev,
+                                inspirationPhotos: prev.inspirationPhotos.filter((_, i) => i !== index)
+                              }));
+                            }}
+                            className="absolute top-2 right-2 bg-pink-500 text-white rounded-full p-1 hover:bg-pink-600"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <>
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto text-pink-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>
-                    </button>
-                  </div>
-                ) : (
-                  <>
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto text-pink-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                    <p className="text-pink-700 mb-2">Drag & drop your inspiration photo here</p>
-                    <p className="text-pink-500 mb-4">or</p>
-                    <button
-                      type="button"
-                      onClick={onButtonClick}
-                      className="bg-pink-500 hover:bg-pink-600 text-white font-medium py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-pink-400 focus:ring-opacity-50 transition duration-300"
-                    >
-                      Browse Files
-                    </button>
-                    <input
-                      ref={fileInputRef}
-                      type="file"
-                      accept="image/*"
-                      onChange={handleFileChange}
-                      className="hidden"
-                    />
-                  </>
-                )}
+                      <p className="text-pink-700 mb-2">Drag & drop your inspiration photos here</p>
+                      <p className="text-pink-500 mb-4">or</p>
+                    </>
+                  )}
+                </div>
+                
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="bg-pink-500 hover:bg-pink-600 text-white font-medium py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-pink-400 focus:ring-opacity-50 transition duration-300 w-full md:w-auto self-center"
+                >
+                  {previewUrls.length > 0 ? 'Add More Photos' : 'Browse Files'}
+                </button>
+                
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={(e) => handleFilesChange(e, false)}
+                  className="hidden"
+                />
               </div>
             </div>
             
@@ -1136,13 +1158,14 @@ const Booking = () => {
                     <p className="mb-2">• Please inform us of any allergies, medical conditions, or special requirements before your appointment.</p>
                     <p className="mb-3">• We reserve the right to refuse service if there are any contagious nail or skin conditions.</p>
                     
-                    <h5 className="font-semibold mt-3">Satisfaction Guarantee</h5>
-                    <p className="mb-2">• If you are not satisfied with your service, please let us know within 7 days and we will make it right.</p>
-                    <p className="mb-3">• Refunds are provided at our discretion.</p>
                     
                     <h5 className="font-semibold mt-3">Deposits</h5>
                     <p className="mb-2">• For services over $50, a deposit may be required to secure your booking.</p>
                     <p className="mb-2">• Deposits are non-refundable for cancellations with less than 24 hours notice.</p>
+                    
+                    <div className="mt-4">
+                      <img src={assets.ConsentForm} alt="Consent Form" className="w-full h-auto rounded shadow-md" />
+                    </div>
                   </div>
                 )}
               </div>

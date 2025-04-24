@@ -1,36 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-
-const services = [
-  {
-    id: 1,
-    title: 'Classic Gel Manicure',
-    description: 'A traditional manicure that includes nail shaping, cuticle care, and a polish of your choice.',
-    price: '$25+',
-    image: 'https://img.freepik.com/free-photo/woman-showing-her-beautiful-nails_23-2148697087.jpg',
-  },
-  {
-    id: 2,
-    title: 'Gel-X Manicure',
-    description: 'Long-lasting gel polish with gel-x extension tips. Lasts up to 3 weeks without chipping.',
-    price: '$40+',
-    image: 'https://img.freepik.com/free-photo/woman-showing-her-nail-art-fingernails_23-2149820439.jpg',
-  },
-  {
-    id: 3,
-    title: 'Acrylic Nail Extensions',
-    description: 'Enhance your nails with durable acrylic extensions, shaped and styled to your preference.',
-    price: '$60+',
-    image: 'https://img.freepik.com/free-photo/healthy-beautiful-manicure-flowers-polish_23-2148766555.jpg',
-  },
-  {
-    id: 4,
-    title: 'Parafin Wax Treatment',
-    description: 'A relaxing pedicure with exfoliation, massage, and a moisturizing treatment.',
-    price: '$50+',
-    image: 'https://img.freepik.com/free-photo/close-up-mortar-with-creamy-substance_23-2147809251.jpg',
-  },
-];
+import { services } from '../assets/assets';
 
 const Services = () => {
   const carouselRef = useRef(null);

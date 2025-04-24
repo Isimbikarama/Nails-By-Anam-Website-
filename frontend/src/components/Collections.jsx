@@ -96,6 +96,7 @@ const Collections = () => {
   };
 
   return (
+    <div>
     <div className="items-center w-full py-12 relative px-[5%]">
       
 
@@ -134,12 +135,13 @@ const Collections = () => {
             onClick={() => scrollToIndex(index)}
             className={`w-3 h-3 rounded-full ${currentIndex === index ? 'bg-pink-500' : 'bg-gray-300'}`}
           />
+        
         ))}
       </div>
 
       {selectedCollection && (
-        <div className="fixed inset-0 flex justify-center backdrop-blur items-center z-50">
-          <div className="relative bg-white rounded-2xl shadow-lg w-[90%] max-w-4xl p-8 mx-auto my-auto transform transition-all">
+        <div className="fixed inset-0 flex flex-col backdrop-blur z-50" style={{ paddingTop: '2vh' }}>
+          <div className="relative bg-white rounded-2xl shadow-lg w-[90%] max-w-4xl p-8 mx-auto transform transition-all">
             <button
               onClick={closeModal}
               className="absolute top-4 right-4 text-gray-600 hover:text-black text-xl font-bold"
@@ -184,9 +186,10 @@ const Collections = () => {
                 Book Now
               </button>
             </div>
-          </div>
+            </div>
         </div>
       )}
+      </div>
 
       <div className="w-full px-3 py-12 flex flex-col items-center justify-center text-center">
         <h2 className="text-4xl md:text-5xl mb-4" style={{ fontFamily: 'PTSerif-Regular' }}>
@@ -205,6 +208,7 @@ const Collections = () => {
           <span className="text-3xl">Look Book</span>
         </button>
       </div>
+    
     </div>
   );
 };

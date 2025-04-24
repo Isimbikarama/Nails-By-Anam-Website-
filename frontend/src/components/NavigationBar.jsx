@@ -73,11 +73,11 @@ const NavigationBar = () => {
       
       {/* Desktop menu - always visible on md and up */}
       <ul className='hidden md:flex items-center gap-5'>
-        <NavLink to="/"><li className='py-1 px-3'>Home</li></NavLink>
+        <NavLink to="/"><li className='py-1 px-3 hover:scale-110 transition-transform duration-200'>Home</li></NavLink>
         
         <div className="relative group">
           <NavLink to="/services">
-            <li className='py-1 px-3'>Services</li>
+            <li className='py-1 px-3 hover:scale-110 transition-transform duration-200'>Services</li>
           </NavLink>
           <div className="absolute opacity-0 group-hover:opacity-100 hover:opacity-100  w-40 z-50 transition-opacity duration-150 ease-in-out"
                >
@@ -87,14 +87,14 @@ const NavigationBar = () => {
           </div>
         </div>
 
-        <NavLink to="/pressons"><li className='py-1 px-3'>Press-Ons</li></NavLink>
-        <NavLink to="/CuticleOil"><li className='py-1 px-3'>Cuticle Oil</li></NavLink>
-        <NavLink to="/booking"><li className='py-1 px-3'>Booking</li></NavLink>
-        <NavLink to="/lookbook"><li className='py-1 px-3'>Lookbook</li></NavLink>
+        <NavLink to="/pressons"><li className='py-1 px-3 hover:scale-110 transition-transform duration-200'>Press-Ons</li></NavLink>
+        <NavLink to="/CuticleOil"><li className='py-1 px-3 hover:scale-110 transition-transform duration-200'>Cuticle Oil</li></NavLink>
+        <NavLink to="/booking"><li className='py-1 px-3 hover:scale-110 transition-transform duration-200'>Booking</li></NavLink>
+        <NavLink to="/lookbook"><li className='py-1 px-3 hover:scale-110 transition-transform duration-200'>Lookbook</li></NavLink>
         
         <div className="relative group">
           <NavLink to="/about">
-            <li className='py-1 px-3'>About</li>
+            <li className='py-1 px-3 hover:scale-110 transition-transform duration-200'>About</li>
           </NavLink>
           <div className="absolute opacity-0 group-hover:opacity-100 hover:opacity-100  w-40 z-50 transition-opacity duration-150 ease-in-out"
                >
@@ -106,7 +106,7 @@ const NavigationBar = () => {
           </div>
         </div>
         
-        <NavLink to="/contact"><li className='py-1 px-3'>Contact</li></NavLink>
+        <NavLink to="/contact"><li className='py-1 px-3 hover:scale-110 transition-transform duration-200'>Contact</li></NavLink>
       </ul>
     </div>
   )

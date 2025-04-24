@@ -1,5 +1,6 @@
 import React from 'react';
 import {useNavigate} from 'react-router-dom';
+import { assets } from '../assets/assets';
 
 const NailPromo = () => {
 
@@ -19,7 +20,7 @@ const handleCheckCollection= () => {
         {/* Right Side Image - Centered */}
         <div className="w-full h-[400px] lg:w-3/5 lg:h-[650px] bg-white rounded-3xl overflow-hidden lg:absolute lg:right-0 lg:top-1/2 lg:-translate-y-1/2 shadow-2xl">
           <img 
-            src="https://miniamipress.com/cdn/shop/files/1_bf9928d8-7181-4ad2-96ec-0c11e4bfcbfe.png?v=1727440072&width=1500" 
+            src={assets.PokemonPressOn}
             alt="Pink press-on nails in various designs" 
             className="w-full h-full object-cover" 
           />

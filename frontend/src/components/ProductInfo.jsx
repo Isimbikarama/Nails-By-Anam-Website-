@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
+import { assets } from "../assets/assets";
 
 const ProductInfo = () => {
   const [benefitsOpen, setBenefitsOpen] = useState(false);
@@ -111,9 +112,9 @@ const ProductInfo = () => {
                   <div className="hidden lg:block relative h-full">
                     <div className="absolute bottom-0 right-0 w-full h-full">
                       <img 
-                        src="/api/placeholder/200/200"
+                        src={assets.Character_Logo}
                         alt="Nail artist character" 
-                        className="object-contain absolute bottom-0 right-0"
+                        className="object-contain absolute bottom-0 right-0 h-6/7 w-6/7"
                       />
                     </div>
                   </div>
@@ -188,14 +189,14 @@ const ProductInfo = () => {
                     <div className="grid grid-cols-2 gap-4">
                       <div className="flex justify-center items-center">
                         <img 
-                          src="/api/placeholder/150/150" 
+                          src={assets.washingHands}
                           alt="Soaking nails illustration" 
                           className="max-h-40"
                         />
                       </div>
                       <div className="flex justify-center items-center">
                         <img 
-                          src="/api/placeholder/150/150" 
+                          src={assets.apply}
                           alt="Removing nail illustration" 
                           className="max-h-40"
                         />
@@ -212,7 +213,7 @@ const ProductInfo = () => {
                       </div>
                       <div className="flex justify-center mt-4">
                         <img 
-                          src="/api/placeholder/120/60" 
+                          src={assets.container}
                           alt="Nail storage case illustration" 
                           className="max-h-16"
                         />

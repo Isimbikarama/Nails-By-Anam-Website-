@@ -1,26 +1,22 @@
 import React from 'react';
+import { assets } from '../assets/assets';
 
 const PressOnMenu = () => {
   const services = [
     {
-      name: 'Basic Press-Ons',
-      description: 'Includes nail fitting, application, and simple design options.',
-      price: '$25'
-    },
-    {
       name: 'Gel Press-Ons',
       description: 'Long-lasting press-ons with a glossy gel finish.',
-      price: '$40'
+      price: '$40+'
     },
     {
       name: 'French Press-Ons',
       description: 'Classic French tips with custom sizing and application.',
-      price: '$45'
+      price: '$45+'
     },
     {
       name: 'Luxury Press-On Set',
       description: 'Premium designs, Swarovski crystals, and extra durability.',
-      price: '$65'
+      price: '$65+'
     }
   ];
 
@@ -34,9 +30,9 @@ const PressOnMenu = () => {
             <div className="sm:w-1/3">
               
                 <img 
-                  src='https://img.freepik.com/free-photo/woman-showing-her-beautiful-nails_23-2148697087.jpg?t=st=1742239069~exp=1742242669~hmac=0d7c9e38766cebba22112dd55f34b99b0a5f32f37dd24ee226c690a3720d019c&w=1800' 
+                  src={assets.PokemonPressOn}
                   alt="Press-on nails sample" 
-                  className="w-full h-64 sm:h-full rounded-xl object-cover"
+                  className="w-full h-64  rounded-xl object-cover"
                 />
               
             </div>

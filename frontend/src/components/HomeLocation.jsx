@@ -1,6 +1,7 @@
 import React from 'react';
 import { assets } from '../assets/assets';
 
+
 const HomeLocation = () => {
   return (
     <div className="min-h-screen py-16 px-4 sm:px-6 lg:px-8" style={{fontFamily: 'PTSerif-Regular'}}>
@@ -19,9 +20,9 @@ const HomeLocation = () => {
       <div className="max-w-6xl mx-auto mb-16">
         <div className="aspect-w-16 aspect-h-9 rounded-2xl overflow-hidden shadow-xl">
           <img
-            src=""
+            src={assets.studio3}
             alt="Main Studio View"
-            className="w-full h-full object-cover"
+            className="w-full h-150 overflow-hidden object-cover"
           />
         </div>
         <p className="text-center text-gray-600 mt-4 italic">Our bright, clean, and inviting workspace</p>
@@ -36,7 +37,7 @@ const HomeLocation = () => {
           <div className="bg-white rounded-xl shadow-md overflow-hidden">
             <div className="h-64 overflow-hidden">
               <img
-                src={assets.nail_studio_3}
+                src={assets.studio1}
                 alt="Premium Nail Station"
                 className="w-full h-full object-cover"
               />
@@ -53,13 +54,13 @@ const HomeLocation = () => {
           <div className="bg-white rounded-xl shadow-md overflow-hidden">
             <div className="h-64 overflow-hidden">
               <img
-                src={assets.nail_studio_3}
+                src={assets.studio2}
                 alt="Curated Polish Collection"
                 className="w-full h-full object-cover"
               />
             </div>
             <div className="p-6">
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">Curated Polish Collection</h3>
+              <h3 className="text-xl font-semibold text-gray-800 mb-2">Mood Lighting</h3>
               <p className="text-gray-600">
                 Browse our extensive collection of premium nail polishes and art supplies.
               </p>
@@ -70,7 +71,7 @@ const HomeLocation = () => {
           <div className="bg-white rounded-xl shadow-md overflow-hidden">
             <div className="h-64 overflow-hidden">
               <img
-                src={assets.nail_studio_3}
+                src={assets.studio3}
                 alt="Comfort Zone"
                 className="w-full h-full object-cover"
               />
@@ -78,7 +79,7 @@ const HomeLocation = () => {
             <div className="p-6">
               <h3 className="text-xl font-semibold text-gray-800 mb-2">Comfort Zone</h3>
               <p className="text-gray-600">
-                Enjoy complimentary refreshments in our cozy waiting area before your appointment.
+                Enjoy a comfy Atmosphere when you arrive to your appointment.
               </p>
             </div>
           </div>
@@ -94,7 +95,7 @@ const HomeLocation = () => {
           <div className="bg-white rounded-xl shadow-md overflow-hidden">
             <div className="h-80 overflow-hidden">
               <img
-               src={assets.nail_studio_3}
+               src={assets.before}
                 alt="Before Treatment"
                 className="w-full h-full object-cover"
               />
@@ -108,7 +109,7 @@ const HomeLocation = () => {
           <div className="bg-white rounded-xl shadow-md overflow-hidden">
             <div className="h-80 overflow-hidden">
               <img
-               src={assets.nail_studio_3}
+               src={assets.extra} 
                 alt="After Treatment"
                 className="w-full h-full object-cover"
               />
@@ -125,23 +126,31 @@ const HomeLocation = () => {
         <div className="bg-white rounded-xl shadow-lg overflow-hidden">
           <div className="flex flex-col md:flex-row">
             <div className="w-full md:w-1/2">
-              <img
-                src={assets.nail_studio_3}
-                alt="Studio Location Map"
-                className="w-full h-full object-cover"
-              />
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d92025.53226080346!2d-79.2995385!3d43.8807391!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89d4d5efa0324ca9%3A0xf73d52812cb23d63!2sMarkham%2C%20ON!5e0!3m2!1sen!2sca!4v1745506650881!5m2!1sen!2sca"
+              height="100%"
+              allowFullScreen=""
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              className="w-full h-full border-0"
+            ></iframe>
+
+
+
+
             </div>
             <div className="w-full md:w-1/2 p-8">
               <h3 className="text-2xl font-semibold text-gray-800 mb-4">Find Our Studio</h3>
               <p className="text-gray-600 mb-6">
                 Located in a quiet residential area with easy parking and access to public transportation.
+                Location provided after Booking.
               </p>
               <div className="space-y-2">
                 <p className="flex items-center text-gray-700">
                   <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
                   </svg>
-                  123 Tranquil Street, Waterloo, ON
+                  Markham, ON
                 </p>
                 <p className="flex items-center text-gray-700">
                   <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">

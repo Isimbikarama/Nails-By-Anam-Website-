@@ -25,7 +25,7 @@ const Header = () => {
           </p>
           <div className='flex flex-col md:flex-row items-center justify-center w-full max-w-md mx-auto mt-[-5%]'>
             <p className='text-center  text-xl' style={{fontFamily:'PTSerif-Regular'}}>
-              Schedule an appointment now!
+            Luxury manicures & custom press-ons in Waterloo & Markham. Flawless nails, anytime!
             </p>
           </div>
           <button onClick={handleGoToBooking} className='text-xl flex items-center justify-center gap-2 bg-white px-8 py-3 rounded-full text-gray-600 text-sm hover:scale-105 transition-all duration-300 max-w-md mx-auto' style={{fontFamily:'PTSerif-Regular'}}>

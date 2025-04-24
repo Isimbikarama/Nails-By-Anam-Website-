@@ -1,5 +1,6 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom';
+import { assets } from '../assets/assets';
 
 
 
@@ -57,7 +58,7 @@ const Menu = () => {
             <h2 className="text-4xl font-bold mb-4" style={{fontFamily:'bebasNeue-Regular'}}>ACRYLIC & GEL-X</h2>
             
             <div className="flex flex-col sm:flex-row mb-2" style={{fontFamily:"PTSerif-Regular"}}>
-              <img src='https://img.freepik.com/free-photo/woman-showing-her-beautiful-nails_23-2148697087.jpg?t=st=1742239069~exp=1742242669~hmac=0d7c9e38766cebba22112dd55f34b99b0a5f32f37dd24ee226c690a3720d019c&w=1800' 
+              <img src={assets.gelx}  
                 alt="Acrylic nails example" 
                 className="w-full sm:w-75 h-64 sm:h-full rounded-xl object-cover sm:mr-4 mb-4 sm:mb-0" />
               <div className="flex-1">
@@ -92,9 +93,9 @@ const Menu = () => {
             <h2 className="text-4xl font-bold mb-4" style={{fontFamily:'bebasNeue-Regular'}}>ADD ON'S</h2>
             
             <div className="flex flex-col sm:flex-row mb-2" style={{fontFamily:"PTSerif-Regular"}}>
-              <img src='https://img.freepik.com/free-photo/woman-showing-her-beautiful-nails_23-2148697087.jpg?t=st=1742239069~exp=1742242669~hmac=0d7c9e38766cebba22112dd55f34b99b0a5f32f37dd24ee226c690a3720d019c&w=1800' 
+              <img src= 'https://img.freepik.com/free-photo/close-up-mortar-with-creamy-substance_23-2147809251.jpg'
                 alt="Add-on services example" 
-                className="w-full sm:w-75 h-64 sm:h-full rounded-md object-cover sm:mr-4 mb-4 sm:mb-0" />
+                className="w-full sm:w-75 h-64 rounded-md object-cover sm:mr-4 mb-4 sm:mb-0" />
               <div className="flex-1">
                 <div className="flex justify-between mb-1">
                   <p className="font-medium">Paraffin Wax Treatment:</p>
