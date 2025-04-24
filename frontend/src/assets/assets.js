@@ -21,7 +21,7 @@ import extra from './extra.jpg';
 import extra2 from './extra2.jpg';
 import extra3 from './extra3.jpg';
 import before from './before.png';
-import ConsentForm from './consentForm.png'
+import ConsentForm from './ConsentForm.png'
 
 export const nailPhotos = [
   extra,
